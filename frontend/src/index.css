@@ -1,0 +1,307 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+
+:root {
+  /* Warm road-trip palette */
+  --basecamp-900: #1C1917; /* deep charcoal-brown */
+  --basecamp-800: #292524; /* warm dark brown-gray (card bg) */
+  --ember-500: #F5793A; /* sunset orange / amber */
+  --sea-500: #4D9078; /* muted teal-green */
+  --text-on-dark: #F5F3F1; /* warm off-white */
+  --muted-text: #C9C2BD;
+  --node-glow-selected: 0 0 32px rgba(245, 121, 58, 0.55), 0 0 64px rgba(77, 144, 120, 0.15);
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: var(--basecamp-900);
+  color: var(--text-on-dark);
+}
+
+/* ===== 3D Winding Road Perspective Container ===== */
+.winding-3d-scene {
+  perspective: 1100px;
+  perspective-origin: 50% 90%;
+  width: 100%;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+}
+
+.winding-3d-canvas {
+  position: relative;
+  width: 100%;
+  max-width: 840px;
+  height: 640px;
+  transform: rotateX(40deg) scale(0.98);
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.winding-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Dash line flow animation */
+.animated-road-dash {
+  animation: dash-flow 1.8s linear infinite;
+}
+
+@keyframes dash-flow {
+  from {
+    stroke-dashoffset: 28;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* SVG Interactive Pins */
+.svg-pin-group {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.svg-pin-group:hover {
+  transform: scale(1.25);
+}
+
+.svg-pin-path {
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+}
+
+.svg-pin-group:hover .svg-pin-path {
+  filter: drop-shadow(0 0 16px rgba(245, 121, 58, 0.8));
+}
+
+/* ===== Pin HTML Overlay Layer ===== */
+.pins-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.node-overlay-anchor {
+  position: absolute;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -100%);
+  z-index: 20;
+}
+
+.node-overlay-anchor.is-selected {
+  z-index: 100;
+}
+
+/* Pin Label Tag */
+.pin-label-tag {
+  pointer-events: auto;
+  cursor: pointer;
+  background: var(--basecamp-800);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  padding: 5px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 38px; /* Position label tag above the pin head */
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.pin-label-tag:hover {
+  background: linear-gradient(90deg, rgba(245,121,58,0.12), rgba(77,144,120,0.06));
+  border-color: rgba(245,121,58,0.18);
+  transform: scale(1.06);
+}
+
+.pin-icon {
+  font-size: 1.1rem;
+}
+
+.pin-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-on-dark);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Selected state styling */
+.node-overlay-anchor.is-selected .pin-label-tag {
+  background: linear-gradient(135deg, rgba(245,121,58,0.95), rgba(77,144,120,0.95));
+  border-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 0 24px rgba(245,121,58,0.55);
+  transform: translateY(-4px) scale(1.08);
+}
+
+.node-overlay-anchor.is-selected .pin-name {
+  color: #0f172a;
+}
+
+/* Start / Destination Badges */
+.pin-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-top: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.pin-badge.start {
+  background: var(--sea-500);
+  color: #ffffff;
+  border: 1px solid rgba(77,144,120,0.6);
+}
+
+.pin-badge.end {
+  background: #ef4444;
+  color: #ffffff;
+  border: 1px solid #f87171;
+}
+
+/* ===== Inline Popover Card (Anchored Beside the Specific Node) ===== */
+.node-inline-card {
+  pointer-events: auto;
+  position: absolute;
+  width: 330px;
+  background: var(--basecamp-800);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.75);
+  z-index: 100;
+}
+
+.node-inline-card.pop-right {
+  left: 55px;
+  top: -80px;
+}
+
+.node-inline-card.pop-left {
+  right: 55px;
+  top: -80px;
+}
+
+.node-card-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(30,30,30,0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--muted-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.node-card-close:hover {
+  background: var(--ember-500);
+  color: #ffffff;
+}
+
+/* Quest card reward bar */
+.reward-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(245,121,58,0.12), rgba(77,144,120,0.06));
+  border: 1px solid rgba(245,121,58,0.08);
+  border-radius: 14px;
+  padding: 12px 16px;
+}
+
+.reward-xp {
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f6ad55, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.quest-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(77,144,120,0.12);
+  border: 1px solid rgba(77,144,120,0.18);
+  color: var(--sea-500);
+}
+
+.start-quest-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--ember-500), #d65b24);
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 18px rgba(245,121,58,0.18);
+}
+
+.start-quest-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* ===== Section Headers ===== */
+.section-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, #ffffff, #d6cfc9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--muted-text);
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+/* ===== Route Map Section ===== */
+.route-map-section {
+  margin-top: 36px;
+}
+
+.route-map-container {
+  height: 480px;
+  background: var(--basecamp-800);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 24px;
+  overflow: hidden;
+  margin-top: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}

@@ -1,0 +1,145 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+
+function Hero({ onGenerate, isLoading }) {
+  const [form, setForm] = useState({
+    origin: "",
+    destination: "",
+    start_date: "",
+    end_date: "",
+    transport_mode: "car",
+    stay_type: "hotel",
+    budget: 500,
+    mood: "adventure",
+    group_size: 2,
+  });
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleSubmit() {
+    if (onGenerate) onGenerate({ ...form, budget: parseFloat(form.budget), group_size: parseInt(form.group_size) });
+  }
+
+  return (
+    <div className="bg-[var(--basecamp-800)] rounded-3xl p-10 mt-8 shadow-xl border border-black/10">
+
+      <h2 className="text-4xl font-bold">
+        Plan Your Next Adventure
+      </h2>
+
+      <p className="text-gray-400 mt-3">
+        AI Agents create routes, discover hidden gems,
+        generate quests and replan your trip in real time.
+      </p>
+
+      {/* Row 1: From / To / Start / End */}
+      <div className="grid md:grid-cols-4 gap-4 mt-8">
+        <input
+          type="text"
+          name="origin"
+          value={form.origin}
+          onChange={handleChange}
+          placeholder="From (e.g. Chennai)"
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        />
+        <input
+          type="text"
+          name="destination"
+          value={form.destination}
+          onChange={handleChange}
+          placeholder="To (e.g. Munnar)"
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        />
+        <input
+          type="date"
+          name="start_date"
+          value={form.start_date}
+          onChange={handleChange}
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        />
+        <input
+          type="date"
+          name="end_date"
+          value={form.end_date}
+          onChange={handleChange}
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        />
+      </div>
+
+      {/* Row 2: Mood / Transport / Stay / Budget / Group / Submit */}
+      <div className="grid md:grid-cols-6 gap-4 mt-4">
+        <input
+          type="text"
+          name="mood"
+          value={form.mood}
+          onChange={handleChange}
+          placeholder="Mood (adventure)"
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        />
+        <select
+          name="transport_mode"
+          value={form.transport_mode}
+          onChange={handleChange}
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        >
+          <option value="car">Car</option>
+          <option value="train">Train</option>
+          <option value="bus">Bus</option>
+          <option value="flight">Flight</option>
+        </select>
+        <select
+          name="stay_type"
+          value={form.stay_type}
+          onChange={handleChange}
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        >
+          <option value="hotel">Hotel</option>
+          <option value="resort">Resort</option>
+          <option value="hostel">Hostel</option>
+          <option value="homestay">Homestay</option>
+        </select>
+        <input
+          type="number"
+          name="budget"
+          value={form.budget}
+          onChange={handleChange}
+          placeholder="Budget (INR)"
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        />
+        <input
+          type="number"
+          name="group_size"
+          value={form.group_size}
+          onChange={handleChange}
+          placeholder="Group Size"
+          min={1}
+          disabled={isLoading}
+          className="bg-[var(--basecamp-900)] rounded-xl p-4 disabled:opacity-50 text-[var(--text-on-dark)]"
+        />
+        <motion.button
+          onClick={handleSubmit}
+          disabled={isLoading}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+          className="bg-[var(--ember-500)] rounded-xl font-semibold hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3"
+        >
+          {isLoading ? "🔄 Planning..." : "🚀 Generate Journey"}
+        </motion.button>
+      </div>
+
+    </div>
+  );
+}
+
+export default Hero;
