@@ -14,7 +14,27 @@ function mapTripDataToStops(tripData) {
   const STOP_ICONS = ["📍", "🌄", "🍽️", "🏛️", "🌊", "🌿", "🏕️", "🎯"];
 
   const getTravelImage = (query, seed) =>
-    `https://source.unsplash.com/random/900x600/?${encodeURIComponent(query)}&sig=${seed}`;
+    `https://source.unsplash.com/900x600/?${encodeURIComponent(query)}&sig=${seed}`;
+
+  const makeStopImages = (slotData, placeName, destination, seed) => {
+    const baseImages = Array.isArray(slotData?.images)
+      ? slotData.images
+      : slotData?.images
+      ? [slotData.images]
+      : [];
+
+    const fallbackImages = [
+      `https://images.unsplash.com/photo-1511497584788-876760111969?w=900`,
+      `https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=900`,
+    ];
+
+    const generatedImages = [
+      getTravelImage(`${placeName}, ${destination}, scenic`, seed),
+      getTravelImage(`${placeName}, ${destination}, landmark`, seed + 1),
+    ];
+
+    return [...baseImages, ...generatedImages, ...fallbackImages].slice(0, 2);
+  };
 
   const stops = [];
 
@@ -28,6 +48,7 @@ function mapTripDataToStops(tripData) {
       const index = dayIdx * slots.length + slotIdx;
       const placeName = slotData.location || slotData.activity || `Stop ${index + 1}`;
       const destination = tripData.summary?.destination || placeName;
+      const images = makeStopImages(slotData, placeName, destination, index + 1);
 
       stops.push({
         id: index + 1,
@@ -38,10 +59,7 @@ function mapTripDataToStops(tripData) {
         quest: `Visit ${placeName}`,
         reward: `Unlock the Explorer badge and earn ${(index + 1) * 50} XP`,
         description: slotData.notes || slotData.activity,
-        images: [
-          getTravelImage(`${placeName}, ${destination}, scenic`, index + 1),
-          getTravelImage(`${placeName}, ${destination}, landmark`, index + 2),
-        ],
+        images,
         agent: "Live Places API",
         estimatedTime: slotData.estimatedTime || "1-2 hours",
       });

@@ -142,17 +142,20 @@ class PlannerAgent:
                 "morning": {
                     "activity": f"Visit {morning_place['name']}",
                     "location": morning_place["name"],
-                    "notes": "Morning tour & sightseeing"
+                    "notes": "Morning tour & sightseeing",
+                    "images": morning_place.get("images", []),
                 },
                 "afternoon": {
                     "activity": f"Explore {afternoon_place['name']}",
                     "location": afternoon_place["name"],
-                    "notes": "Cultural exploration"
+                    "notes": "Cultural exploration",
+                    "images": afternoon_place.get("images", []),
                 },
                 "evening": {
                     "activity": f"Sunset view at {evening_place['name']}",
                     "location": evening_place["name"],
-                    "notes": "Relaxing evening visual"
+                    "notes": "Relaxing evening visual",
+                    "images": evening_place.get("images", []),
                 },
                 "food": day_food
             })

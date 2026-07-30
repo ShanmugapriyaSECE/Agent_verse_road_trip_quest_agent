@@ -27,6 +27,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 GEOAPIFY_API_KEY = os.getenv("GEOAPIFY_API_KEY")
+UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
 
 _geocode_cache: Dict[str, Tuple[float, float]] = {}
 
@@ -85,6 +86,32 @@ def _query_geoapify_places(lat: float, lon: float, categories: str, radius_m: in
     return response.json().get("features", [])
 
 
+def _search_unsplash_photo(query: str) -> Optional[str]:
+    if not UNSPLASH_ACCESS_KEY:
+        return None
+    try:
+        response = requests.get(
+            "https://api.unsplash.com/search/photos",
+            headers={
+                "Authorization": f"Client-ID {UNSPLASH_ACCESS_KEY}",
+                "Accept-Version": "v1",
+            },
+            params={
+                "query": query,
+                "per_page": 1,
+                "orientation": "landscape",
+            },
+            timeout=15,
+        )
+        response.raise_for_status()
+        results = response.json().get("results", [])
+        if not results:
+            return None
+        return results[0].get("urls", {}).get("regular")
+    except (requests.RequestException, KeyError, IndexError):
+        return None
+
+
 def _mock_places(location: str, mood_theme: str) -> List[Dict[str, Any]]:
     """Fallback so the Planner never breaks if the API/key is unavailable."""
     return [
@@ -129,12 +156,16 @@ def search_places_and_attractions(location: str, mood_theme: str) -> List[Dict[s
             continue  # skip unnamed POIs, not useful for a quest stop
         categories_list = props.get("categories", [])
         category = categories_list[0] if categories_list else "attraction"
-        results.append({
+        place = {
             "name": name,
             "category": category,
             "mood": mood_theme,
             "estimated_time": "1-2 hours",  # Geoapify has no duration data; reasonable default
-        })
+        }
+        image_url = _search_unsplash_photo(f"{name} {location}")
+        if image_url:
+            place["images"] = [image_url]
+        results.append(place)
 
     # Planner indexes places[0], [1], [2] directly — guarantee at least 3 entries
     if len(results) < 3:

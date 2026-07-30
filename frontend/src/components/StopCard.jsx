@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import {
@@ -8,6 +8,29 @@ import {
   FaClock,
   FaFlagCheckered,
 } from "react-icons/fa";
+
+function ImageWithFallback({ sources, alt, className }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [sources]);
+
+  const currentSrc = sources[index] || sources[0] || "";
+
+  return (
+    <img
+      src={currentSrc}
+      alt={alt}
+      className={className}
+      onError={() => {
+        if (index + 1 < sources.length) {
+          setIndex(index + 1);
+        }
+      }}
+    />
+  );
+}
 
 function StopCard({ stop }) {
   const [questStarted, setQuestStarted] = useState(false);
@@ -44,20 +67,22 @@ function StopCard({ stop }) {
 
       {/* Images */}
       <div className="grid lg:grid-cols-2 gap-4 p-5">
-        <img
-          src={
-            stop.images?.[0] ||
-            `https://source.unsplash.com/featured/900x600/?${encodeURIComponent(stop.name)},${encodeURIComponent(stop.location || "travel")}`
-          }
+        <ImageWithFallback
+          sources={[
+            stop.images?.[0],
+            `https://source.unsplash.com/900x600/?${encodeURIComponent(stop.name)}&sig=1`,
+            `https://images.unsplash.com/photo-1511497584788-876760111969?w=900`,
+          ].filter(Boolean)}
           alt={stop.name}
           className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.14)] shadow-inner"
         />
 
-        <img
-          src={
-            stop.images?.[1] ||
-            `https://source.unsplash.com/featured/900x600/?${encodeURIComponent(stop.name)},${encodeURIComponent(stop.location || "destination")}`
-          }
+        <ImageWithFallback
+          sources={[
+            stop.images?.[1],
+            `https://source.unsplash.com/900x600/?${encodeURIComponent(stop.name)}&sig=2`,
+            `https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=900`,
+          ].filter(Boolean)}
           alt={stop.name}
           className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.14)] shadow-inner"
         />
