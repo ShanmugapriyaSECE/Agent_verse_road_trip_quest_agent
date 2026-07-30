@@ -17,7 +17,9 @@ function Home({ tripData, stops = [], isLoading, errorMsg }) {
   const restaurantOptions = Array.from(
     new Set(tripData?.itinerary?.flatMap((day) => day.food || []) || [])
   );
-  const accommodationOptions = tripData?.accommodation?.options || [];
+  const accommodationOptions = (tripData?.accommodation?.options || []).filter(
+    (option) => !/oyo/i.test(option.name || "")
+  );
 
   useEffect(() => {
     if (stops && stops.length && !selectedStop) setSelectedStop(stops[0]);
@@ -151,15 +153,9 @@ function Home({ tripData, stops = [], isLoading, errorMsg }) {
                   </div>
                   <p className="text-right text-sm font-semibold text-[var(--ember-500)]">{option.cost_per_night ? formatINR(option.cost_per_night) + "/night" : "Price info coming"}</p>
                 </div>
-                <button
-                  onClick={() => {
-                    setSelectedBooking(option);
-                    setBooked(true);
-                  }}
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-[var(--sea-500)] px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
-                >
-                  Book this stay
-                </button>
+                <div className="mt-4 rounded-2xl bg-[rgba(255,255,255,0.05)] p-3 text-sm text-[var(--muted-text)]">
+                  Confirm this stay through the dedicated Bookings tab for a cleaner flow.
+                </div>
               </div>
             ))}
           </div>

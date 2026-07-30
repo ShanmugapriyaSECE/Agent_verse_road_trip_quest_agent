@@ -5,7 +5,9 @@ function Bookings({ tripData }) {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
 
-  const options = tripData?.accommodation?.options || [];
+  const rawOptions = tripData?.accommodation?.options || [];
+  const options = rawOptions.filter((option) => !/oyo/i.test(option.name || ""));
+  const hasHiddenOyo = rawOptions.some((option) => /oyo/i.test(option.name || ""));
 
   return (
     <div className="space-y-8">
@@ -49,7 +51,14 @@ function Bookings({ tripData }) {
           ) : (
             <div className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.05)] p-8 shadow-inner">
               <p className="text-lg font-semibold text-[var(--text-on-dark)]">No booking options found</p>
-              <p className="mt-2 text-[var(--muted-text)]">Your generated itinerary did not return stay suggestions. Please replan or try a different destination.</p>
+              <p className="mt-2 text-[var(--muted-text)]">
+                Your generated itinerary did not return stay suggestions. Please replan or try a different destination.
+              </p>
+              {hasHiddenOyo && (
+                <p className="mt-3 text-sm text-[var(--spark-500)]">
+                  OYO-style listings have been filtered out to keep stay recommendations authentic and practical.
+                </p>
+              )}
             </div>
           )}
         </div>

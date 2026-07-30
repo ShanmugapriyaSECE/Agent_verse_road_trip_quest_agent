@@ -42,6 +42,18 @@ COST_PER_KM_BY_MODE = {
     "bike": 4.0,
 }
 
+BLACKLISTED_STAY_TERMS = ("oyo", "tkg")
+
+MIN_REALISTIC_NIGHTLY_RATE = 180.0
+MAX_ESTIMATE_NIGHTLY_RATE = 1800.0
+
+
+def _is_blacklisted_stay_name(name: str) -> bool:
+    if not name:
+        return False
+    normalized = name.lower()
+    return any(term in normalized for term in BLACKLISTED_STAY_TERMS)
+
 
 def _geocode_location(location: str) -> Optional[Tuple[float, float]]:
     if location in _geocode_cache:
@@ -177,19 +189,21 @@ def search_transport_options(origin: str, destination: str, travel_date: str, mo
 def search_accommodations(location: str, stay_type: str, room_count: int, budget_limit: float, total_days: int) -> List[Dict[str, Any]]:
     """Real replacement using Geoapify Places API for real hotel/resort names.
     No live pricing on the free tier — cost_per_night stays an honest estimate
-    derived from the user's own budget, not a fabricated hotel rate."""
+    derived from the user's own budget and realistic minimum lodging rates."""
     per_night_budget = (budget_limit / max(total_days, 1)) if total_days > 0 else budget_limit
+    estimated_base = round(min(max(per_night_budget, MIN_REALISTIC_NIGHTLY_RATE), MAX_ESTIMATE_NIGHTLY_RATE), 2)
+    alternate_estimate = round(min(max(per_night_budget * 0.75, MIN_REALISTIC_NIGHTLY_RATE), MAX_ESTIMATE_NIGHTLY_RATE), 2)
 
     fallback = [
         {
             "name": f"Grand {stay_type.capitalize()} {location}",
-            "cost_per_night": min(120.0, per_night_budget),
-            "reason": f"Fits budget and room requirements ({room_count} rooms).",
+            "cost_per_night": estimated_base,
+            "reason": f"Estimated cost for a realistic stay in {location} based on your budget and travel length.",
         },
         {
             "name": f"Comfort Suites {location}",
-            "cost_per_night": min(85.0, per_night_budget * 0.8),
-            "reason": "Budget-friendly with good accessibility.",
+            "cost_per_night": alternate_estimate,
+            "reason": "Budget-friendly estimate for a comfortable stay within realistic local pricing.",
         },
     ]
 
@@ -219,13 +233,13 @@ def search_accommodations(location: str, stay_type: str, room_count: int, budget
         for feature in features:
             props = feature.get("properties", {})
             name = props.get("name")
-            if not name:
+            if not name or _is_blacklisted_stay_name(name):
                 continue
+
+            estimated_cost = round(min(max(per_night_budget, MIN_REALISTIC_NIGHTLY_RATE), MAX_ESTIMATE_NIGHTLY_RATE), 2)
             results.append({
                 "name": name,
-                # Real name, but no live price data on free tier — this is
-                # a budget-derived estimate, not the hotel's real rate.
-                "cost_per_night": round(min(120.0, per_night_budget), 2),
+                "cost_per_night": estimated_cost,
                 "reason": f"Real listing near {location}, matched to your budget (exact live pricing not available on free API tier).",
             })
 
