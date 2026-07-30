@@ -1,72 +1,110 @@
-import { FaHome, FaRoute, FaMedal, FaUserCircle, FaHotel, FaSyncAlt } from "react-icons/fa";
+import { FaHome, FaMedal, FaUserCircle, FaHotel, FaSyncAlt } from "react-icons/fa";
 
 function Navbar({ currentPage, onNavigate }) {
-  return (
-    <nav className="w-full bg-[linear-gradient(90deg,rgba(155,108,255,0.24),rgba(255,92,168,0.14))] border-b border-white/10 px-6 py-4 flex flex-wrap items-center justify-between gap-6 backdrop-blur-sm">
+  const isLanding = currentPage === "landing";
 
-      {/* Logo */}
-      <div className="flex items-center gap-3">
-        <span className="text-3xl">🚗</span>
-        <h1 className="text-2xl font-bold text-[var(--ember-500)]">Road Trip Quest</h1>
+  return (
+    <nav
+      className={`w-full z-50 px-8 sm:px-12 py-6 flex items-center justify-between gap-8 font-['Montserrat',sans-serif] transition-all duration-300 ${
+        isLanding
+          ? "absolute top-0 inset-x-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent border-none"
+          : "relative bg-[var(--basecamp-900)]/90 backdrop-blur-md border-b border-white/10"
+      }`}
+    >
+      {/* Brand Logo - Far Left */}
+      <div
+        className="flex items-center gap-3 cursor-pointer shrink-0"
+        onClick={() => onNavigate && onNavigate("landing")}
+      >
+        <h1 className="text-xl sm:text-2xl font-black tracking-widest text-white uppercase drop-shadow-md">
+          Road Trip <span className="text-[#ff75c8]">Quest</span>
+        </h1>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-6">
+      {/* Navigation Links - Centered / Evenly Spaced */}
+      <div className="flex items-center gap-4 sm:gap-8 font-semibold text-xs sm:text-sm tracking-wide">
         <button
           onClick={() => onNavigate && onNavigate("landing")}
-          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "landing" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
+            currentPage === "landing"
+              ? "bg-white/20 text-white backdrop-blur-md border border-white/30 shadow-md font-bold"
+              : "text-white/80 hover:text-white"
+          }`}
         >
-          <FaHome className="inline mr-2" /> Welcome
+          Home
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("plan")}
-          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "plan" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
+            currentPage === "plan"
+              ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-md font-bold"
+              : "text-white/80 hover:text-white"
+          }`}
         >
           Plan Trip
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("journey")}
-          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "journey" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
+            currentPage === "journey"
+              ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-md font-bold"
+              : "text-white/80 hover:text-white"
+          }`}
         >
           Your Journey
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("quests")}
-          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "quests" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
+            currentPage === "quests"
+              ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-md font-bold"
+              : "text-white/80 hover:text-white"
+          }`}
         >
-          🎯 Quests
+          Quests
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("badges")}
-          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "badges" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
+            currentPage === "badges"
+              ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-md font-bold"
+              : "text-white/80 hover:text-white"
+          }`}
         >
-          <FaMedal className="inline mr-2" /> Badges
+          Badges
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("bookings")}
-          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "bookings" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
+            currentPage === "bookings"
+              ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-md font-bold"
+              : "text-white/80 hover:text-white"
+          }`}
         >
-          <FaHotel className="inline mr-2" /> Bookings
+          Bookings
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("replan")}
-          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "replan" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-4 py-2 rounded-full transition-all duration-200 ${
+            currentPage === "replan"
+              ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-md font-bold"
+              : "text-white/80 hover:text-white"
+          }`}
         >
-          <FaSyncAlt className="inline mr-2" /> Replan
+          Replan
         </button>
       </div>
 
-      {/* Profile */}
-      <button className="text-2xl text-[var(--sea-500)] hover:opacity-90">
+      {/* Profile Icon - Far Right */}
+      <button className="text-xl sm:text-2xl text-white/90 hover:text-white transition shrink-0">
         <FaUserCircle />
       </button>
-
     </nav>
   );
 }

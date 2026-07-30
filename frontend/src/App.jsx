@@ -157,39 +157,41 @@ function App() {
     <div className="min-h-screen bg-[var(--basecamp-900)] text-[var(--text-on-dark)]">
       <Navbar currentPage={page} onNavigate={setPage} />
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        {page === "landing" && <Landing onNavigate={setPage} />}
+      {page === "landing" ? (
+        <Landing onNavigate={setPage} />
+      ) : (
+        <main className="max-w-6xl mx-auto px-6 py-8">
+          {page === "plan" && <PlanTrip onGenerate={handleGenerate} isLoading={isLoading} />}
 
-        {page === "plan" && <PlanTrip onGenerate={handleGenerate} isLoading={isLoading} />}
+          {page === "journey" && (
+            <Home tripData={tripData} stops={stops} isLoading={isLoading} errorMsg={errorMsg} />
+          )}
 
-        {page === "journey" && (
-          <Home tripData={tripData} stops={stops} isLoading={isLoading} errorMsg={errorMsg} />
-        )}
+          {page === "quests" && (
+            <section className="space-y-6">
+              <h2 className="text-3xl font-bold">🎯 Quests</h2>
+              <p className="text-[var(--muted-text)]">
+                Quests view — coming together. Select a journey to see quests for each stop.
+              </p>
+            </section>
+          )}
 
-        {page === "quests" && (
-          <section className="space-y-6">
-            <h2 className="text-3xl font-bold">🎯 Quests</h2>
-            <p className="text-[var(--muted-text)]">
-              Quests view — coming together. Select a journey to see quests for each stop.
-            </p>
-          </section>
-        )}
+          {page === "badges" && (
+            <section className="space-y-6">
+              <h2 className="text-3xl font-bold">🏅 Badges</h2>
+              <BadgePanel />
+            </section>
+          )}
 
-        {page === "badges" && (
-          <section className="space-y-6">
-            <h2 className="text-3xl font-bold">🏅 Badges</h2>
-            <BadgePanel />
-          </section>
-        )}
+          {page === "bookings" && (
+            <Bookings tripData={tripData} />
+          )}
 
-        {page === "bookings" && (
-          <Bookings tripData={tripData} />
-        )}
-
-        {page === "replan" && (
-          <Replan tripData={tripData} isLoading={isLoading} onReplan={handleReplan} />
-        )}
-      </main>
+          {page === "replan" && (
+            <Replan tripData={tripData} isLoading={isLoading} onReplan={handleReplan} />
+          )}
+        </main>
+      )}
     </div>
   );
 }
