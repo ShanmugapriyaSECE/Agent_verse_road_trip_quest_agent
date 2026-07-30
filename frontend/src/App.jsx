@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 import Navbar from "./components/Navbar";
+import Landing from "./pages/Landing";
 import PlanTrip from "./pages/PlanTrip";
 import Home from "./pages/Home";
 import Bookings from "./pages/Bookings";
@@ -100,7 +101,7 @@ function mapTripDataToStops(tripData) {
 }
 
 function App() {
-  const [page, setPage] = useState("plan");
+  const [page, setPage] = useState("landing");
   const [isLoading, setIsLoading] = useState(false);
   const [tripData, setTripData] = useState(null);
   const [stops, setStops] = useState([]);
@@ -157,6 +158,8 @@ function App() {
       <Navbar currentPage={page} onNavigate={setPage} />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
+        {page === "landing" && <Landing onNavigate={setPage} />}
+
         {page === "plan" && <PlanTrip onGenerate={handleGenerate} isLoading={isLoading} />}
 
         {page === "journey" && (

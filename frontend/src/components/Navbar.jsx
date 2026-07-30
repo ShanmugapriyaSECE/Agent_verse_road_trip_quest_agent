@@ -1,4 +1,4 @@
-import { FaRoute, FaMedal, FaUserCircle, FaHotel, FaSyncAlt } from "react-icons/fa";
+import { FaHome, FaRoute, FaMedal, FaUserCircle, FaHotel, FaSyncAlt } from "react-icons/fa";
 
 function Navbar({ currentPage, onNavigate }) {
   return (
@@ -12,6 +12,13 @@ function Navbar({ currentPage, onNavigate }) {
 
       {/* Tabs */}
       <div className="flex items-center gap-6">
+        <button
+          onClick={() => onNavigate && onNavigate("landing")}
+          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "landing" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+        >
+          <FaHome className="inline mr-2" /> Welcome
+        </button>
+
         <button
           onClick={() => onNavigate && onNavigate("plan")}
           className={`px-3 py-2 rounded-full font-semibold ${currentPage === "plan" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}

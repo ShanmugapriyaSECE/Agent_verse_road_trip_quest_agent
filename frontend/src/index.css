@@ -311,3 +311,172 @@ body {
   margin-top: 16px;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
 }
+
+/* ===== Landing page layers ===== */
+.landing-page {
+  scroll-snap-type: y mandatory;
+}
+
+.landing-hero {
+  min-height: calc(100vh - 96px);
+  padding: 6rem 0 2rem;
+  display: grid;
+  place-items: center;
+}
+
+.landing-scene {
+  position: sticky;
+  top: 96px;
+  width: min(100%, 1040px);
+  height: 86vh;
+  max-height: 900px;
+  overflow: hidden;
+  border-radius: 48px;
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 40%),
+    linear-gradient(180deg, rgba(9, 5, 15, 0.95), rgba(44, 17, 92, 0.9));
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.landing-layer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 120px);
+  border-radius: 44px;
+  filter: drop-shadow(0 25px 60px rgba(0, 0, 0, 0.18));
+}
+
+.landing-layer-4 {
+  top: 8%;
+  height: 80%;
+  background: linear-gradient(180deg, #e6f0ff 0%, #d8e8ff 100%);
+}
+
+.landing-layer-3 {
+  top: 14%;
+  height: 72%;
+  width: calc(100% - 160px);
+  background: linear-gradient(180deg, #d6f5ed 0%, #c6ecf1 100%);
+}
+
+.landing-layer-2 {
+  top: 20%;
+  height: 66%;
+  width: calc(100% - 200px);
+  background: linear-gradient(180deg, #b2e7f1 0%, #7dc8e1 100%);
+}
+
+.landing-layer-1 {
+  top: 26%;
+  height: 60%;
+  width: calc(100% - 240px);
+  background: linear-gradient(180deg, #6be3d8 0%, #3ec4d3 100%);
+}
+
+.landing-cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.12));
+}
+
+.cloud-1 {
+  top: 12%;
+  left: 12%;
+  width: 160px;
+  height: 70px;
+}
+
+.cloud-2 {
+  top: 16%;
+  right: 10%;
+  width: 140px;
+  height: 64px;
+}
+
+.cloud-3 {
+  top: 24%;
+  left: 24%;
+  width: 180px;
+  height: 76px;
+}
+
+.landing-sun {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 246, 221, 1) 0%, rgba(255, 192, 0, 0.45) 65%, transparent 100%);
+  box-shadow: 0 0 80px rgba(255, 192, 0, 0.35);
+}
+
+.landing-waves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.landing-wave {
+  position: absolute;
+  left: 50%;
+  width: 110%;
+  transform: translateX(-50%);
+  border-radius: 999px 999px 0 0;
+}
+
+.wave-1 {
+  bottom: 0;
+  height: 32%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.08));
+}
+
+.wave-2 {
+  bottom: 6%;
+  height: 28%;
+  width: 105%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.03));
+}
+
+.wave-3 {
+  bottom: 12%;
+  height: 22%;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 85%);
+}
+
+.wave-4 {
+  bottom: 18%;
+  height: 16%;
+  width: 92%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 90%);
+}
+
+.landing-copy {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+  text-align: center;
+}
+
+.landing-stack {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.landing-card {
+  scroll-snap-align: start;
+  transition: transform 0.4s ease, border-color 0.4s ease;
+}
+
+.landing-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 92, 168, 0.28);
+}
