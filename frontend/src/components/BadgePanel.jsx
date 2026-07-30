@@ -10,7 +10,7 @@ function BadgePanel() {
   ];
 
   return (
-    <div className="bg-[var(--basecamp-800)] rounded-2xl p-6 shadow-md border border-black/10">
+    <div className="bg-[rgba(255,255,255,0.06)] rounded-3xl p-6 shadow-2xl border border-white/10">
 
       <h2 className="text-xl font-bold mb-5 text-[var(--ember-500)]">
         🏅 Badges

@@ -9,7 +9,7 @@ function AgentLog({ isLoading }) {
   ];
 
   return (
-    <div className="bg-[linear-gradient(135deg,rgba(77,144,120,0.12),rgba(255,140,66,0.1))] rounded-3xl p-5 shadow-2xl border border-[rgba(255,255,255,0.06)]">
+    <div className="bg-[rgba(255,255,255,0.08)] rounded-3xl p-5 shadow-2xl border border-white/10 backdrop-blur-sm">
 
       <h2 className="text-lg font-bold mb-3 text-[var(--ember-500)]">
         ⚙️ Planning Pipeline

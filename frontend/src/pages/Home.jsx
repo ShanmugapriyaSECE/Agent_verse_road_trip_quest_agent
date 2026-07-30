@@ -51,7 +51,7 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
 
       {/* Selected stop summary */}
       {selectedStop && (
-        <section className="bg-[var(--basecamp-800)] rounded-3xl p-6 shadow-xl border border-black/10">
+        <section className="bg-[rgba(255,255,255,0.08)] rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-sm">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-[var(--sea-500)]">Active Journey Stop</p>
@@ -86,7 +86,7 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
               </div>
             ))
           ) : (
-            <div className="bg-[var(--basecamp-700)] rounded-3xl p-8 text-[var(--muted-text)] border border-[rgba(255,255,255,0.08)] shadow-inner">
+            <div className="bg-[rgba(255,255,255,0.06)] rounded-3xl p-8 text-[var(--muted-text)] border border-[rgba(255,255,255,0.12)] shadow-inner">
               No journey yet — plan one from the Plan Trip page.
             </div>
           )}
@@ -110,7 +110,7 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
       </section>
 
       {/* Booking and replanning panel */}
-      <section className="bg-[var(--basecamp-800)] rounded-3xl p-6 shadow-xl border border-black/10">
+      <section className="bg-[rgba(255,255,255,0.08)] rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h3 className="text-2xl font-semibold text-[var(--sea-500)]">📦 Booking & Replanner</h3>
@@ -138,7 +138,7 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
         </div>
 
         {booked && (
-          <div className="mt-5 rounded-2xl bg-[rgba(77,144,120,0.14)] border border-[rgba(77,144,120,0.22)] p-4 text-[var(--text-on-dark)]">
+          <div className="mt-5 rounded-2xl bg-[rgba(155,108,255,0.12)] border border-[rgba(255,92,168,0.18)] p-4 text-[var(--text-on-dark)]">
             <p className="font-semibold text-[var(--sea-500)]">Booking simulation complete.</p>
             <p className="mt-1 text-[var(--muted-text)]">
               Your itinerary is now marked as reserved. For a fully operational booking system, we can add backend endpoints or an external travel API.

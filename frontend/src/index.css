@@ -2,21 +2,24 @@
 @import "tailwindcss";
 
 :root {
-  /* Vibrant road-trip palette */
-  --basecamp-900: #120c08; /* deep rich charcoal */
-  --basecamp-800: #31221a; /* warm dark cocoa */
-  --basecamp-700: #4a3528; /* rich coffee */
-  --ember-500: #ff8c42; /* glowing sunset orange */
-  --sea-500: #5db39d; /* vibrant teal green */
-  --text-on-dark: #fff6eb; /* warm ivory */
-  --muted-text: #d8c9bb;
-  --node-glow-selected: 0 0 32px rgba(255, 140, 66, 0.55), 0 0 64px rgba(93, 179, 157, 0.18);
+  /* Vibrant purple-pink palette */
+  --basecamp-900: #09050f; /* deep midnight */
+  --basecamp-800: #2a163f; /* dark plum */
+  --basecamp-700: #3e2a6a; /* violet ink */
+  --spark-500: #ff5ca8; /* hot pink */
+  --lilac-500: #9b6cff; /* electric violet */
+  --blush-400: #ff9edc; /* soft pink */
+  --text-on-dark: #fdf8ff; /* ivory white */
+  --muted-text: #d9c8e7;
+  --surface-glow: rgba(255, 255, 255, 0.08);
+  --node-glow-selected: 0 0 32px rgba(255, 92, 168, 0.55), 0 0 64px rgba(155, 108, 255, 0.18);
 }
 
 body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at top, rgba(255, 140, 66, 0.16), transparent 28%),
-    linear-gradient(180deg, #0e0905 0%, #120c08 60%, #1c1510 100%);
+  background: radial-gradient(circle at top, rgba(255, 92, 168, 0.14), transparent 22%),
+    radial-gradient(circle at right, rgba(155, 108, 255, 0.12), transparent 18%),
+    linear-gradient(180deg, #09050f 0%, #120930 40%, #27133f 100%);
   color: var(--text-on-dark);
   min-height: 100vh;
 }

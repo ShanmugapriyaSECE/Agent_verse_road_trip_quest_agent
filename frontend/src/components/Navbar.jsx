@@ -2,7 +2,7 @@ import { FaRoute, FaMedal, FaUserCircle } from "react-icons/fa";
 
 function Navbar({ currentPage, onNavigate }) {
   return (
-    <nav className="w-full bg-[linear-gradient(90deg,rgba(245,121,58,0.18),rgba(77,144,120,0.16))] border-b border-black/20 px-6 py-4 flex flex-wrap items-center justify-between gap-6 backdrop-blur-sm">
+    <nav className="w-full bg-[linear-gradient(90deg,rgba(155,108,255,0.24),rgba(255,92,168,0.14))] border-b border-white/10 px-6 py-4 flex flex-wrap items-center justify-between gap-6 backdrop-blur-sm">
 
       {/* Logo */}
       <div className="flex items-center gap-3">
@@ -14,28 +14,28 @@ function Navbar({ currentPage, onNavigate }) {
       <div className="flex items-center gap-6">
         <button
           onClick={() => onNavigate && onNavigate("plan")}
-          className={`px-3 py-2 rounded-md font-semibold ${currentPage === "plan" ? "bg-gradient-to-r from-[#ffb16d] to-[#f54f2b] text-black shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "plan" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
         >
           Plan Trip
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("journey")}
-          className={`px-3 py-2 rounded-md font-semibold ${currentPage === "journey" ? "bg-gradient-to-r from-[#ffb16d] to-[#f54f2b] text-black shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "journey" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
         >
           Your Journey
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("quests")}
-          className={`px-3 py-2 rounded-md font-semibold ${currentPage === "quests" ? "bg-gradient-to-r from-[#ffb16d] to-[#f54f2b] text-black shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "quests" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
         >
           🎯 Quests
         </button>
 
         <button
           onClick={() => onNavigate && onNavigate("badges")}
-          className={`px-3 py-2 rounded-md font-semibold ${currentPage === "badges" ? "bg-gradient-to-r from-[#ffb16d] to-[#f54f2b] text-black shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "badges" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
         >
           <FaMedal className="inline mr-2" /> Badges
         </button>

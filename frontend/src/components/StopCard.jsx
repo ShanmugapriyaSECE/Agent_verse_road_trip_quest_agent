@@ -40,20 +40,20 @@ function StopCard({ stop }) {
   }
 
   return (
-    <motion.div whileHover={{ scale: 1.05, rotate: -2 }} transition={{ type: 'spring', stiffness: 260 }} className="mt-10 bg-[var(--basecamp-800)] rounded-3xl overflow-hidden shadow-2xl border border-black/10">
+    <motion.div whileHover={{ scale: 1.05, rotate: -2 }} transition={{ type: 'spring', stiffness: 260 }} className="mt-10 bg-[rgba(255,255,255,0.08)] rounded-3xl overflow-hidden shadow-2xl border border-white/10 backdrop-blur-sm">
 
       {/* Images */}
       <div className="grid lg:grid-cols-2 gap-4 p-5">
         <img
           src={stop.images?.[0] || `https://source.unsplash.com/random/900x600/?roadtrip&sig=1`}
           alt={stop.name}
-          className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.08)]"
+          className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.14)] shadow-inner"
         />
 
         <img
           src={stop.images?.[1] || `https://source.unsplash.com/random/900x600/?scenic&sig=2`}
           alt={stop.name}
-          className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.08)]"
+          className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.14)] shadow-inner"
         />
       </div>
 
@@ -80,32 +80,32 @@ function StopCard({ stop }) {
 
         <div className="grid md:grid-cols-2 gap-5 mt-8">
 
-          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
-            <FaMapMarkerAlt className="text-[var(--sea-500)] text-xl" />
+          <div className="bg-[rgba(255,255,255,0.06)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.12)] shadow-inner">
+            <FaMapMarkerAlt className="text-[var(--lilac-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Location</p>
               <p>{stop.location}</p>
             </div>
           </div>
 
-          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
-            <FaRobot className="text-[var(--sea-500)] text-xl" />
+          <div className="bg-[rgba(255,255,255,0.06)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.12)] shadow-inner">
+            <FaRobot className="text-[var(--lilac-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Data Source</p>
               <p>{stop.agent}</p>
             </div>
           </div>
 
-          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
-            <FaClock className="text-[var(--sea-500)] text-xl" />
+          <div className="bg-[rgba(255,255,255,0.06)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.12)] shadow-inner">
+            <FaClock className="text-[var(--lilac-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Estimated Time</p>
               <p>{stop.estimatedTime || "1-2 hours"}</p>
             </div>
           </div>
 
-          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
-            <FaStar className="text-[var(--ember-500)] text-xl" />
+          <div className="bg-[rgba(255,255,255,0.06)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.12)] shadow-inner">
+            <FaStar className="text-[var(--spark-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Difficulty</p>
               <p>Easy</p>

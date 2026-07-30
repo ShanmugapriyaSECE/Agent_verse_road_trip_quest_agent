@@ -9,7 +9,7 @@ function BudgetCard({ transport, accommodation, summary }) {
   const fmt = (val) => (val !== null && val !== undefined ? formatINR(val) : "—");
 
   return (
-    <div className="bg-gradient-to-br from-[#332417] via-[#3f2d24] to-[#44382a] rounded-2xl p-6 shadow-2xl border border-black/10">
+    <div className="bg-[rgba(255,255,255,0.08)] rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-sm">
 
       <h2 className="text-xl font-bold text-[var(--ember-500)]">
         💰 Budget Summary

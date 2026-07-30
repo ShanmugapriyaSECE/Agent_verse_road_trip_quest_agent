@@ -6,7 +6,7 @@ function WeatherCard({ weather, destination }) {
   const condition = weather?.condition || weather?.weather || null;
 
   return (
-    <div className="w-full rounded-3xl p-5 shadow-2xl border border-black/10 bg-gradient-to-r from-[#ffb175] via-[#d55e31] to-[#4d9078] text-[var(--text-on-dark)]">
+    <div className="w-full rounded-3xl p-5 shadow-2xl border border-white/10 bg-gradient-to-r from-[#9b6cff] via-[#ff5ca8] to-[#ff9bdb] text-[var(--text-on-dark)]">
 
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>

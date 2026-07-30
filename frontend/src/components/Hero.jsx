@@ -24,13 +24,13 @@ function Hero({ onGenerate, isLoading }) {
   }
 
   return (
-    <div className="bg-[linear-gradient(135deg,rgba(255,156,96,0.18),rgba(33,21,16,0.65))] rounded-3xl p-10 mt-8 shadow-2xl border border-[rgba(255,140,66,0.2)] backdrop-blur-md">
+    <div className="bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(155,108,255,0.12))] rounded-3xl p-10 mt-8 shadow-2xl border border-[rgba(255,255,255,0.18)] backdrop-blur-md">
 
-      <h2 className="text-4xl font-bold text-[var(--text-on-dark)]">
+      <h2 className="text-4xl font-bold text-[#26002f]">
         Plan Your Next Adventure
       </h2>
 
-      <p className="text-[var(--muted-text)] mt-3">
+      <p className="text-[#4c2b5d] mt-3">
         AI Agents create routes, discover hidden gems,
         generate quests and help you replan your trip in real time.
       </p>
@@ -44,7 +44,7 @@ function Hero({ onGenerate, isLoading }) {
           onChange={handleChange}
           placeholder="From (e.g. Chennai)"
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         />
         <input
           type="text"
@@ -53,7 +53,7 @@ function Hero({ onGenerate, isLoading }) {
           onChange={handleChange}
           placeholder="To (e.g. Munnar)"
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         />
         <input
           type="date"
@@ -61,7 +61,7 @@ function Hero({ onGenerate, isLoading }) {
           value={form.start_date}
           onChange={handleChange}
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         />
         <input
           type="date"
@@ -69,7 +69,7 @@ function Hero({ onGenerate, isLoading }) {
           value={form.end_date}
           onChange={handleChange}
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         />
       </div>
 
@@ -82,14 +82,14 @@ function Hero({ onGenerate, isLoading }) {
           onChange={handleChange}
           placeholder="Mood (adventure)"
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         />
         <select
           name="transport_mode"
           value={form.transport_mode}
           onChange={handleChange}
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         >
           <option value="car">Car</option>
           <option value="train">Train</option>
@@ -101,7 +101,7 @@ function Hero({ onGenerate, isLoading }) {
           value={form.stay_type}
           onChange={handleChange}
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         >
           <option value="hotel">Hotel</option>
           <option value="resort">Resort</option>
@@ -115,7 +115,7 @@ function Hero({ onGenerate, isLoading }) {
           onChange={handleChange}
           placeholder="Budget (INR)"
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         />
         <input
           type="number"
@@ -125,14 +125,14 @@ function Hero({ onGenerate, isLoading }) {
           placeholder="Group Size"
           min={1}
           disabled={isLoading}
-          className="bg-[var(--basecamp-700)] rounded-2xl p-4 text-[var(--text-on-dark)] border border-[rgba(255,255,255,0.08)] shadow-inner"
+          className="bg-[var(--text-on-dark)]/90 rounded-2xl p-4 text-[var(--basecamp-900)] border border-[rgba(155,108,255,0.2)] shadow-inner"
         />
         <motion.button
           onClick={handleSubmit}
           disabled={isLoading}
           whileTap={{ scale: 0.96 }}
           transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-          className="bg-[var(--ember-500)] rounded-xl font-semibold hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3"
+          className="bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white rounded-2xl font-semibold hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 shadow-lg"
         >
           {isLoading ? "🔄 Planning..." : "🚀 Generate Journey"}
         </motion.button>

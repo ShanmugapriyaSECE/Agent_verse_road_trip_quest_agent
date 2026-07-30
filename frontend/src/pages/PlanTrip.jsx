@@ -10,7 +10,7 @@ function PlanTrip({ onGenerate, isLoading }) {
         transition={{ duration: 0.35 }}
         className="w-full max-w-4xl"
       >
-        <div className="rounded-[36px] bg-[linear-gradient(135deg,rgba(255,139,66,0.12),rgba(38,96,81,0.12))] border border-[rgba(255,140,66,0.15)] p-8 mb-8 shadow-2xl">
+        <div className="rounded-[36px] bg-[linear-gradient(135deg,rgba(155,108,255,0.14),rgba(255,92,168,0.12))] border border-[rgba(255,255,255,0.12)] p-8 mb-8 shadow-2xl">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="text-5xl font-extrabold text-[var(--text-on-dark)]">Plan Trip</h1>
