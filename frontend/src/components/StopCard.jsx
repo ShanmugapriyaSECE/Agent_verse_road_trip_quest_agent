@@ -45,13 +45,19 @@ function StopCard({ stop }) {
       {/* Images */}
       <div className="grid lg:grid-cols-2 gap-4 p-5">
         <img
-          src={stop.images?.[0] || `https://source.unsplash.com/random/900x600/?roadtrip&sig=1`}
+          src={
+            stop.images?.[0] ||
+            `https://source.unsplash.com/featured/900x600/?${encodeURIComponent(stop.name)},${encodeURIComponent(stop.location || "travel")}`
+          }
           alt={stop.name}
           className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.14)] shadow-inner"
         />
 
         <img
-          src={stop.images?.[1] || `https://source.unsplash.com/random/900x600/?scenic&sig=2`}
+          src={
+            stop.images?.[1] ||
+            `https://source.unsplash.com/featured/900x600/?${encodeURIComponent(stop.name)},${encodeURIComponent(stop.location || "destination")}`
+          }
           alt={stop.name}
           className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.14)] shadow-inner"
         />

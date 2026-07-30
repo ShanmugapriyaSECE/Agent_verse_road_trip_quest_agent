@@ -7,12 +7,19 @@ import RouteMap from "../components/RouteMap";
 import AgentLog from "../components/AgentLog";
 import ProgressPanel from "../components/ProgressPanel";
 import BadgePanel from "../components/BadgePanel";
+import { formatINR } from "../format";
 
 function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
   const [selectedStop, setSelectedStop] = useState(stops?.[0] || null);
   const [showPanel, setShowPanel] = useState(false);
   const [booked, setBooked] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [displayXP, setDisplayXP] = useState(0);
+
+  const restaurantOptions = Array.from(
+    new Set(tripData?.itinerary?.flatMap((day) => day.food || []) || [])
+  );
+  const accommodationOptions = tripData?.accommodation?.options || [];
 
   useEffect(() => {
     if (stops && stops.length && !selectedStop) setSelectedStop(stops[0]);
@@ -20,6 +27,7 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
 
   useEffect(() => {
     setBooked(false);
+    setSelectedBooking(null);
   }, [tripData]);
 
   useEffect(() => {
@@ -109,6 +117,58 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
         </div>
       </section>
 
+      {restaurantOptions.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-semibold mt-6">🍴 Nearby restaurants</h3>
+              <p className="text-[var(--muted-text)] mt-2">Real restaurant picks from your route, ready to explore on your journey.</p>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {restaurantOptions.map((restaurant) => (
+              <div key={restaurant} className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.06)] p-4 shadow-sm">
+                <p className="font-semibold text-[var(--text-on-dark)]">{restaurant}</p>
+                <p className="mt-2 text-sm text-[var(--muted-text)]">Located near your journey, perfect for a local meal stop.</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {accommodationOptions.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-semibold mt-6">🏡 Cottage & stay options</h3>
+              <p className="text-[var(--muted-text)] mt-2">Browse actual lodging options discovered for your destination.</p>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {accommodationOptions.map((option, index) => (
+              <div key={`${option.name}-${index}`} className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.06)] p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-lg font-semibold text-[var(--text-on-dark)]">{option.name}</p>
+                    <p className="mt-2 text-[var(--muted-text)] text-sm">{option.reason || "Good fit for your travel style"}</p>
+                  </div>
+                  <p className="text-right text-sm font-semibold text-[var(--ember-500)]">{option.cost_per_night ? formatINR(option.cost_per_night) + "/night" : "Price info coming"}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedBooking(option);
+                    setBooked(true);
+                  }}
+                  className="mt-4 inline-flex items-center justify-center rounded-full bg-[var(--sea-500)] px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
+                >
+                  Book this stay
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Booking and replanning panel */}
       <section className="bg-[rgba(255,255,255,0.08)] rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -141,7 +201,9 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
           <div className="mt-5 rounded-2xl bg-[rgba(155,108,255,0.12)] border border-[rgba(255,92,168,0.18)] p-4 text-[var(--text-on-dark)]">
             <p className="font-semibold text-[var(--sea-500)]">Booking simulation complete.</p>
             <p className="mt-1 text-[var(--muted-text)]">
-              Your itinerary is now marked as reserved. For a fully operational booking system, we can add backend endpoints or an external travel API.
+              {selectedBooking
+                ? `Selected stay: ${selectedBooking.name} for ${formatINR(selectedBooking.cost_per_night || 0)} per night.`
+                : "Your itinerary is now marked as reserved. For a fully operational booking system, we can add backend endpoints or an external travel API."}
             </p>
           </div>
         )}

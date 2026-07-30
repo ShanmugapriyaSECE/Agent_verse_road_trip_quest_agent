@@ -1,6 +1,11 @@
 import json
+from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 import concurrent.futures
+
+from scout_agent import search_places_and_attractions, search_food_spots
+from real_tools import get_weather_forecast, search_transport_options, search_accommodations
+
 
 SYSTEM_PROMPT = """ROLE: Primary Planner Agent (Travel System).
 
@@ -35,52 +40,6 @@ OUTPUT FORMAT (JSON):
   "local_insights": {"language_tips":"","blog_highlights":""}
 }"""
 
-# --- Custom Python Tools ---
-
-def get_weather_forecast(location: str, start_date: str, end_date: str) -> Dict[str, Any]:
-    """Fetch weather forecast for specified location and date range."""
-    return {
-        "location": location,
-        "start_date": start_date,
-        "end_date": end_date,
-        "forecast": f"Pleasant and mostly sunny weather expected in {location} between {start_date} and {end_date}.",
-        "advisory": "Light jacket recommended for cool evenings."
-    }
-
-def search_places_and_attractions(location: str, mood_theme: str) -> List[Dict[str, Any]]:
-    """Search points of interest and attractions matching location and mood/theme."""
-    return [
-        {"name": f"{location} Central Park", "category": "Nature", "mood": mood_theme, "estimated_time": "2 hours"},
-        {"name": f"Historic {location} Museum", "category": "Culture", "mood": mood_theme, "estimated_time": "3 hours"},
-        {"name": f"{location} Scenic Viewpoint", "category": "Sightseeing", "mood": mood_theme, "estimated_time": "1.5 hours"}
-    ]
-
-def search_transport_options(origin: str, destination: str, travel_date: str, mode: str) -> Dict[str, Any]:
-    """Search intercity travel options between origin and destination."""
-    return {
-        "origin": origin,
-        "destination": destination,
-        "travel_date": travel_date,
-        "mode": mode,
-        "details": f"Express {mode.capitalize()} service from {origin} to {destination}",
-        "cost": 150.0
-    }
-
-def search_accommodations(location: str, stay_type: str, room_count: int, budget_limit: float, total_days: int) -> List[Dict[str, Any]]:
-    """Search accommodation matching criteria within budget constraints."""
-    per_night_budget = (budget_limit / max(total_days, 1)) if total_days > 0 else budget_limit
-    return [
-        {
-            "name": f"Grand {stay_type.capitalize()} {location}",
-            "cost_per_night": min(120.0, per_night_budget),
-            "reason": f"Fits budget and room requirements ({room_count} rooms)."
-        },
-        {
-            "name": f"Comfort Suites {location}",
-            "cost_per_night": min(85.0, per_night_budget * 0.8),
-            "reason": "Budget-friendly with good accessibility."
-        }
-    ]
 
 def search_local_transport_and_blogs(location: str) -> Dict[str, Any]:
     """Search local transport options and retrieve travel blog recommendations."""
@@ -89,13 +48,6 @@ def search_local_transport_and_blogs(location: str) -> Dict[str, Any]:
         "language_tips": "Basic English and local language phrases are helpful for taxi drivers and local shops.",
         "blog_highlights": f"Travelers recommend visiting early morning to avoid crowds in popular spots of {location}."
     }
-
-def search_food_spots(location: str, cuisine_preference: str) -> List[Dict[str, Any]]:
-    """Search food spots according to location and cuisine preferences."""
-    return [
-        {"name": f"{location} Delight Bistro", "cuisine": cuisine_preference, "avg_cost": 25.0},
-        {"name": f"The Local Flavors Hub", "cuisine": cuisine_preference, "avg_cost": 15.0}
-    ]
 
 
 class PlannerAgent:
@@ -117,6 +69,17 @@ class PlannerAgent:
         missing = [param for param in required if param not in params or params[param] is None]
         return missing if missing else None
 
+    def _calculate_total_days(self, start_date: str, end_date: str) -> int:
+        """Real day count derived from actual dates. Falls back to 1 if dates
+        are malformed, so the Planner never crashes mid-demo."""
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            end = datetime.strptime(end_date, "%Y-%m-%d")
+            days = (end - start).days + 1
+            return max(days, 1)
+        except (ValueError, TypeError):
+            return 1
+
     def fetch_data_parallel(self, params: Dict[str, Any]) -> Dict[str, Any]:
         destination = params["destination"]
         start_date = params["start_date"]
@@ -128,9 +91,8 @@ class PlannerAgent:
         mood = params["mood"]
         group_size = params["group_size"]
 
-        # Estimate room count based on group size
         room_count = max(1, (group_size + 1) // 2)
-        total_days = 2  # default day count fallback
+        total_days = self._calculate_total_days(start_date, end_date)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_weather = executor.submit(get_weather_forecast, destination, start_date, end_date)
@@ -150,6 +112,53 @@ class PlannerAgent:
             }
         return results
 
+    def _build_itinerary(self, params: Dict[str, Any], tool_data: Dict[str, Any], total_days: int) -> List[Dict[str, Any]]:
+        """Builds one entry per real day in the trip, rotating through all
+        real places/food Scout found instead of only ever using the first 3."""
+        places = tool_data["places"] or [{"name": "Local exploration"}]
+        food = tool_data["food"] or []
+
+        start_dt = datetime.strptime(params["start_date"], "%Y-%m-%d")
+        itinerary = []
+
+        for day_num in range(1, total_days + 1):
+            day_date = (start_dt + timedelta(days=day_num - 1)).strftime("%Y-%m-%d")
+
+            morning_place = places[(day_num - 1) * 3 % len(places)]
+            afternoon_place = places[((day_num - 1) * 3 + 1) % len(places)] if len(places) > 1 else morning_place
+            evening_place = places[((day_num - 1) * 3 + 2) % len(places)] if len(places) > 2 else morning_place
+
+            if food:
+                day_food = [
+                    food[i % len(food)]["name"]
+                    for i in range((day_num - 1) * 2, (day_num - 1) * 2 + 2)
+                ]
+            else:
+                day_food = []
+
+            itinerary.append({
+                "day": day_num,
+                "date": day_date,
+                "morning": {
+                    "activity": f"Visit {morning_place['name']}",
+                    "location": morning_place["name"],
+                    "notes": "Morning tour & sightseeing"
+                },
+                "afternoon": {
+                    "activity": f"Explore {afternoon_place['name']}",
+                    "location": afternoon_place["name"],
+                    "notes": "Cultural exploration"
+                },
+                "evening": {
+                    "activity": f"Sunset view at {evening_place['name']}",
+                    "location": evening_place["name"],
+                    "notes": "Relaxing evening visual"
+                },
+                "food": day_food
+            })
+
+        return itinerary
+
     def plan(self, params: Dict[str, Any]) -> Dict[str, Any]:
         missing_params = self.validate_inputs(params)
         if missing_params:
@@ -160,13 +169,14 @@ class PlannerAgent:
             }
 
         tool_data = self.fetch_data_parallel(params)
+        total_days = self._calculate_total_days(params["start_date"], params["end_date"])
 
-        # Calculate estimated total cost from transport and accommodation
         transport_cost = tool_data["transport"]["cost"]
         stay_cost_per_night = tool_data["stays"][0]["cost_per_night"] if tool_data["stays"] else 0
-        total_cost = transport_cost + (stay_cost_per_night * 2)
+        total_cost = transport_cost + (stay_cost_per_night * total_days)
 
-        # Assemble JSON schema response adhering strictly to constraints & output format
+        itinerary = self._build_itinerary(params, tool_data, total_days)
+
         response = {
             "summary": {
                 "destination": params["destination"],
@@ -191,28 +201,7 @@ class PlannerAgent:
                 "type": params["stay_type"],
                 "options": tool_data["stays"]
             },
-            "itinerary": [
-                {
-                    "day": 1,
-                    "date": params["start_date"],
-                    "morning": {
-                        "activity": f"Visit {tool_data['places'][0]['name']}",
-                        "location": tool_data["places"][0]["name"],
-                        "notes": "Morning tour & sightseeing"
-                    },
-                    "afternoon": {
-                        "activity": f"Explore {tool_data['places'][1]['name']}",
-                        "location": tool_data["places"][1]["name"],
-                        "notes": "Cultural exploration"
-                    },
-                    "evening": {
-                        "activity": f"Sunset view at {tool_data['places'][2]['name']}",
-                        "location": tool_data["places"][2]["name"],
-                        "notes": "Relaxing evening visual"
-                    },
-                    "food": [spot["name"] for spot in tool_data["food"]]
-                }
-            ],
+            "itinerary": itinerary,
             "local_insights": {
                 "language_tips": tool_data["local"]["language_tips"],
                 "blog_highlights": tool_data["local"]["blog_highlights"]
@@ -226,7 +215,7 @@ if __name__ == "__main__":
     sample_request = {
         "destination": "Munnar",
         "start_date": "2026-08-10",
-        "end_date": "2026-08-12",
+        "end_date": "2026-08-14",
         "origin": "Chennai",
         "transport_mode": "car",
         "stay_type": "resort",
