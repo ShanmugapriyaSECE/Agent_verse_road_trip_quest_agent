@@ -1,4 +1,4 @@
-import { FaRoute, FaMedal, FaUserCircle } from "react-icons/fa";
+import { FaRoute, FaMedal, FaUserCircle, FaHotel, FaSyncAlt } from "react-icons/fa";
 
 function Navbar({ currentPage, onNavigate }) {
   return (
@@ -38,6 +38,20 @@ function Navbar({ currentPage, onNavigate }) {
           className={`px-3 py-2 rounded-full font-semibold ${currentPage === "badges" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
         >
           <FaMedal className="inline mr-2" /> Badges
+        </button>
+
+        <button
+          onClick={() => onNavigate && onNavigate("bookings")}
+          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "bookings" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+        >
+          <FaHotel className="inline mr-2" /> Bookings
+        </button>
+
+        <button
+          onClick={() => onNavigate && onNavigate("replan")}
+          className={`px-3 py-2 rounded-full font-semibold ${currentPage === "replan" ? "bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] text-white shadow-xl" : "text-[var(--muted-text)] hover:text-[var(--text-on-dark)]"}`}
+        >
+          <FaSyncAlt className="inline mr-2" /> Replan
         </button>
       </div>
 

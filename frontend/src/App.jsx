@@ -4,6 +4,8 @@ import axios from "axios";
 import Navbar from "./components/Navbar";
 import PlanTrip from "./pages/PlanTrip";
 import Home from "./pages/Home";
+import Bookings from "./pages/Bookings";
+import Replan from "./pages/Replan";
 import BadgePanel from "./components/BadgePanel";
 
 const API_URL = "http://localhost:8000/plan-trip";
@@ -16,6 +18,38 @@ function mapTripDataToStops(tripData) {
   const getTravelImage = (query, seed) =>
     `https://source.unsplash.com/900x600/?${encodeURIComponent(query)}&sig=${seed}`;
 
+  const getCuratedImages = (placeName, destination) => {
+    const query = `${placeName} ${destination}`.toLowerCase();
+    if (query.includes("waterfall") || query.includes("falls")) {
+      return [
+        `https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=900`,
+        `https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=900`,
+      ];
+    }
+    if (query.includes("tea") || query.includes("plantation") || query.includes("garden")) {
+      return [
+        `https://images.unsplash.com/photo-1511497584788-876760111969?w=900`,
+        `https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900`,
+      ];
+    }
+    if (query.includes("mountain") || query.includes("peak") || query.includes("hill")) {
+      return [
+        `https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=900`,
+        `https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=900`,
+      ];
+    }
+    if (query.includes("cafe") || query.includes("food") || query.includes("restaurant")) {
+      return [
+        `https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900`,
+        `https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=900`,
+      ];
+    }
+    return [
+      `https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900`,
+      `https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=900`,
+    ];
+  };
+
   const makeStopImages = (slotData, placeName, destination, seed) => {
     const baseImages = Array.isArray(slotData?.images)
       ? slotData.images
@@ -23,17 +57,13 @@ function mapTripDataToStops(tripData) {
       ? [slotData.images]
       : [];
 
-    const fallbackImages = [
-      `https://images.unsplash.com/photo-1511497584788-876760111969?w=900`,
-      `https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=900`,
-    ];
-
+    const fallbackImages = getCuratedImages(placeName, destination);
     const generatedImages = [
       getTravelImage(`${placeName}, ${destination}, scenic`, seed),
       getTravelImage(`${placeName}, ${destination}, landmark`, seed + 1),
     ];
 
-    return [...baseImages, ...generatedImages, ...fallbackImages].slice(0, 2);
+    return [...baseImages, ...fallbackImages, ...generatedImages].slice(0, 2);
   };
 
   const stops = [];
@@ -119,6 +149,7 @@ function App() {
   async function handleReplan() {
     if (!lastRequest) return;
     await handleGenerate(lastRequest);
+    setPage("journey");
   }
 
   return (
@@ -129,7 +160,7 @@ function App() {
         {page === "plan" && <PlanTrip onGenerate={handleGenerate} isLoading={isLoading} />}
 
         {page === "journey" && (
-          <Home tripData={tripData} stops={stops} isLoading={isLoading} errorMsg={errorMsg} onReplan={handleReplan} />
+          <Home tripData={tripData} stops={stops} isLoading={isLoading} errorMsg={errorMsg} />
         )}
 
         {page === "quests" && (
@@ -146,6 +177,14 @@ function App() {
             <h2 className="text-3xl font-bold">🏅 Badges</h2>
             <BadgePanel />
           </section>
+        )}
+
+        {page === "bookings" && (
+          <Bookings tripData={tripData} />
+        )}
+
+        {page === "replan" && (
+          <Replan tripData={tripData} isLoading={isLoading} onReplan={handleReplan} />
         )}
       </main>
     </div>

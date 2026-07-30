@@ -9,11 +9,9 @@ import ProgressPanel from "../components/ProgressPanel";
 import BadgePanel from "../components/BadgePanel";
 import { formatINR } from "../format";
 
-function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
+function Home({ tripData, stops = [], isLoading, errorMsg }) {
   const [selectedStop, setSelectedStop] = useState(stops?.[0] || null);
   const [showPanel, setShowPanel] = useState(false);
-  const [booked, setBooked] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState(null);
   const [displayXP, setDisplayXP] = useState(0);
 
   const restaurantOptions = Array.from(
@@ -26,8 +24,7 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
   }, [stops]);
 
   useEffect(() => {
-    setBooked(false);
-    setSelectedBooking(null);
+    setShowPanel(false);
   }, [tripData]);
 
   useEffect(() => {
@@ -169,44 +166,18 @@ function Home({ tripData, stops = [], isLoading, errorMsg, onReplan }) {
         </section>
       )}
 
-      {/* Booking and replanning panel */}
-      <section className="bg-[rgba(255,255,255,0.08)] rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-sm">
+      <section className="bg-[rgba(255,255,255,0.05)] rounded-3xl p-6 shadow-2xl border border-white/10 backdrop-blur-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="text-2xl font-semibold text-[var(--sea-500)]">📦 Booking & Replanner</h3>
+            <h3 className="text-2xl font-semibold text-[var(--sea-500)]">📌 Journey tools</h3>
             <p className="mt-2 text-[var(--muted-text)] max-w-2xl">
-              Use this panel to confirm a demo booking or refresh your route if your plans change.
+              Booking and replanning now live on dedicated pages in the top navigation.
             </p>
           </div>
-
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => {
-                if (onReplan) onReplan();
-              }}
-              className="rounded-full bg-[var(--ember-500)] px-6 py-3 font-semibold text-black transition hover:brightness-110"
-            >
-              🔁 Replan Route
-            </button>
-            <button
-              onClick={() => setBooked(true)}
-              className="rounded-full bg-[var(--sea-500)] px-6 py-3 font-semibold text-black transition hover:brightness-110"
-            >
-              🧾 Confirm Booking
-            </button>
+          <div className="rounded-full bg-[rgba(155,108,255,0.12)] px-4 py-2 text-sm text-[var(--ember-500)] font-semibold">
+            Open the Bookings or Replan tab above
           </div>
         </div>
-
-        {booked && (
-          <div className="mt-5 rounded-2xl bg-[rgba(155,108,255,0.12)] border border-[rgba(255,92,168,0.18)] p-4 text-[var(--text-on-dark)]">
-            <p className="font-semibold text-[var(--sea-500)]">Booking simulation complete.</p>
-            <p className="mt-1 text-[var(--muted-text)]">
-              {selectedBooking
-                ? `Selected stay: ${selectedBooking.name} for ${formatINR(selectedBooking.cost_per_night || 0)} per night.`
-                : "Your itinerary is now marked as reserved. For a fully operational booking system, we can add backend endpoints or an external travel API."}
-            </p>
-          </div>
-        )}
       </section>
 
       {/* Collapsible secondary area (AgentLog + Progress) as small floating panel */}
