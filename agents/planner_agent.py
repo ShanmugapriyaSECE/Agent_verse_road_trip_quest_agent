@@ -5,9 +5,17 @@ import concurrent.futures
 
 from .scout_agent import ScoutAgent
 try:
+    from .llm_client import call_llm_json
+except ImportError:
+    call_llm_json = None
+try:
     from agents.real_tools import get_weather_forecast, search_transport_options, search_accommodations
 except ImportError:
     from .real_tools import get_weather_forecast, search_transport_options, search_accommodations
+
+
+def _format_tool_data(params: Dict[str, Any], tool_data: Dict[str, Any]) -> str:
+    return json.dumps({"request": params, "tool_data": tool_data}, indent=2, ensure_ascii=False)
 
 
 SYSTEM_PROMPT = """ROLE: Primary Planner Agent (Travel System).
@@ -26,6 +34,10 @@ TOOLS TO CALL:
 - search_accommodations(location, stay_type, room_count, budget_limit, total_days)
 - scout_agent.search_local_insights(location)
 - scout_agent.search_food_spots(location, cuisine_preference)
+
+OUTPUT:
+- Return only valid JSON.
+- Use the schema: summary, weather, transport, accommodation, itinerary, local_insights.
 """
 
 # def get_weather_forecast(location: str, start_date: str, end_date: str) -> Dict[str, Any]:
@@ -81,6 +93,22 @@ class PlannerAgent:
             "search_food_spots": self.scout_agent.search_food_spots,
         }
 
+    def _try_generate_plan_with_llm(self, params: Dict[str, Any], tool_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Use the Planner system prompt and tool output to generate the final plan via LLM."""
+        if not callable(call_llm_json):
+            return None
+
+        user_message = (
+            "Use the provided request details and tool outputs below to generate the travel plan. "
+            "Do not fabricate data; only use the tool outputs or clearly label estimates. "
+            "Return only valid JSON matching the expected plan schema.\n\n"
+            + _format_tool_data(params, tool_data)
+        )
+        result = call_llm_json(self.system_prompt, user_message)
+        if isinstance(result, dict) and "summary" in result and "itinerary" in result:
+            return result
+        return None
+
     def validate_inputs(self, params: Dict[str, Any]) -> Optional[List[str]]:
         required = ["destination", "start_date", "end_date", "origin", "transport_mode", "stay_type", "budget", "mood", "group_size"]
         missing = [param for param in required if param not in params or params[param] is None]
@@ -96,6 +124,42 @@ class PlannerAgent:
             return max(days, 1)
         except (ValueError, TypeError):
             return 1
+
+    def _validate_llm_plan(self, plan: Any) -> bool:
+        if not isinstance(plan, dict):
+            return False
+        required = [
+            "summary",
+            "weather",
+            "transport",
+            "accommodation",
+            "itinerary",
+            "local_insights",
+        ]
+        return all(key in plan for key in required)
+
+    def _generate_plan_with_llm(self, params: Dict[str, Any], tool_data: Dict[str, Any], total_cost: float) -> Optional[Dict[str, Any]]:
+        if not callable(call_llm_json):
+            return None
+
+        user_message = (
+            "User request:\n"
+            f"destination: {params['destination']}, origin: {params['origin']}, "
+            f"start_date: {params['start_date']}, end_date: {params['end_date']}, "
+            f"transport_mode: {params['transport_mode']}, stay_type: {params['stay_type']}, "
+            f"budget: {params['budget']}, mood: {params['mood']}, group_size: {params['group_size']}\n"
+            "Tool outputs:\n"
+            f"{json.dumps(tool_data, indent=2, ensure_ascii=False)}\n"
+            "Please build a complete travel plan in strict JSON with keys: summary, weather, transport, accommodation, itinerary, local_insights. "
+            "Do not fabricate data beyond the tool outputs; use safe defaults only when needed. "
+            "The itinerary should contain one object per trip day with morning, afternoon, evening, and food slots. "
+            "Include total_cost in the summary."
+        )
+
+        result = call_llm_json(self.system_prompt, user_message)
+        if self._validate_llm_plan(result):
+            return result
+        return None
 
     def fetch_data_parallel(self, params: Dict[str, Any]) -> Dict[str, Any]:
         destination = params["destination"]
@@ -189,43 +253,46 @@ class PlannerAgent:
         tool_data = self.fetch_data_parallel(params)
         total_days = self._calculate_total_days(params["start_date"], params["end_date"])
 
-        # Calculate estimated total cost from transport and accommodation
+        llm_response = self._try_generate_plan_with_llm(params, tool_data)
+        if llm_response:
+            return llm_response
+
+        # Fallback deterministic plan if the LLM is unavailable or fails.
         transport_cost = tool_data["transport"]["cost"]
         stay_cost_per_night = tool_data["stays"][0]["cost_per_night"] if tool_data["stays"] else 0
         total_cost = transport_cost + (stay_cost_per_night * total_days)
 
-        itinerary = self._build_itinerary(params,tool_data, total_days)
+        itinerary = self._build_itinerary(params, tool_data, total_days)
 
-        # Assemble JSON schema response adhering strictly to constraints & output format
         response = {
             "summary": {
                 "destination": params["destination"],
                 "dates": f"{params['start_date']} to {params['end_date']}",
                 "group_size": params["group_size"],
                 "theme": params["mood"],
-                "total_cost": total_cost
+                "total_cost": total_cost,
             },
             "weather": {
                 "summary": tool_data["weather"]["forecast"],
-                "advisory": tool_data["weather"]["advisory"]
+                "advisory": tool_data["weather"]["advisory"],
             },
             "transport": {
                 "intercity": {
                     "mode": tool_data["transport"]["mode"],
                     "details": tool_data["transport"]["details"],
-                    "cost": tool_data["transport"]["cost"]
+                    "cost": tool_data["transport"]["cost"],
                 },
-                "local_tips": tool_data["local"]["local_transport"]
+                "local_tips": tool_data["local"]["local_transport"],
             },
             "accommodation": {
                 "type": params["stay_type"],
-                "options": tool_data["stays"]
+                "options": tool_data["stays"],
             },
             "itinerary": itinerary,
             "local_insights": {
-                "language_tips" : tool_data["local"]["language_tips"],
-                "blog_highlights": tool_data["local"]["blog_highlights"]
-            }
+                "language_tips": tool_data["local"]["language_tips"],
+                "blog_highlights": tool_data["local"]["blog_highlights"],
+            },
         #     "itinerary": [
         #         {
         #             "day": 1,
