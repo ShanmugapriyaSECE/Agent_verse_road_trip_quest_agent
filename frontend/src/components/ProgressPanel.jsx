@@ -8,7 +8,7 @@ function ProgressPanel({ stops }) {
   const level    = hasStops ? Math.max(1, stops.length) : 4;
 
   return (
-    <div className="bg-[var(--basecamp-800)] rounded-2xl p-4 shadow-md border border-black/10">
+    <div className="bg-[linear-gradient(135deg,rgba(255,140,66,0.12),rgba(77,144,120,0.12))] rounded-3xl p-5 shadow-2xl border border-[rgba(255,255,255,0.06)]">
 
       <h2 className="text-lg font-bold text-[var(--ember-500)]">
         ⭐ Adventure Progress

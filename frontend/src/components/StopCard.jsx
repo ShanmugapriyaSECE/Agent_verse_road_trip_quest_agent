@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 import {
   FaMapMarkerAlt,
   FaStar,
@@ -8,6 +10,20 @@ import {
 } from "react-icons/fa";
 
 function StopCard({ stop }) {
+  const [questStarted, setQuestStarted] = useState(false);
+
+  const handleStartQuest = () => {
+    setQuestStarted(true);
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#ffb347", "#ffcc5c", "#ff6b35", "#5db39d"],
+    });
+
+    window.setTimeout(() => setQuestStarted(false), 1500);
+  };
+
   if (!stop) {
     return (
       <div className="mt-10 bg-[var(--basecamp-800)] rounded-3xl p-10 text-center text-[var(--muted-text)] shadow-xl">
@@ -29,15 +45,15 @@ function StopCard({ stop }) {
       {/* Images */}
       <div className="grid lg:grid-cols-2 gap-4 p-5">
         <img
-          src={stop.images[0]}
+          src={stop.images?.[0] || `https://source.unsplash.com/random/900x600/?roadtrip&sig=1`}
           alt={stop.name}
-          className="w-full h-72 object-cover rounded-2xl"
+          className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.08)]"
         />
 
         <img
-          src={stop.images[1]}
+          src={stop.images?.[1] || `https://source.unsplash.com/random/900x600/?scenic&sig=2`}
           alt={stop.name}
-          className="w-full h-72 object-cover rounded-2xl"
+          className="w-full h-72 object-cover rounded-2xl border border-[rgba(255,255,255,0.08)]"
         />
       </div>
 
@@ -56,7 +72,7 @@ function StopCard({ stop }) {
 
         </div>
 
-        <p className="text-gray-400 mt-5 leading-7">
+        <p className="text-[var(--muted-text)] mt-5 leading-7">
           {stop.description}
         </p>
 
@@ -64,7 +80,7 @@ function StopCard({ stop }) {
 
         <div className="grid md:grid-cols-2 gap-5 mt-8">
 
-          <div className="bg-[var(--basecamp-900)] rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
             <FaMapMarkerAlt className="text-[var(--sea-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Location</p>
@@ -72,7 +88,7 @@ function StopCard({ stop }) {
             </div>
           </div>
 
-          <div className="bg-[var(--basecamp-900)] rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
             <FaRobot className="text-[var(--sea-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Data Source</p>
@@ -80,7 +96,7 @@ function StopCard({ stop }) {
             </div>
           </div>
 
-          <div className="bg-[var(--basecamp-900)] rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
             <FaClock className="text-[var(--sea-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Estimated Time</p>
@@ -88,7 +104,7 @@ function StopCard({ stop }) {
             </div>
           </div>
 
-          <div className="bg-[var(--basecamp-900)] rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-[var(--basecamp-700)] rounded-3xl p-4 flex items-center gap-3 border border-[rgba(255,255,255,0.08)] shadow-inner">
             <FaStar className="text-[var(--ember-500)] text-xl" />
             <div>
               <p className="text-sm text-[var(--muted-text)]">Difficulty</p>
@@ -127,9 +143,18 @@ function StopCard({ stop }) {
             </p>
           </div>
 
-          <button className="bg-cyan-500 hover:bg-cyan-600 transition px-8 py-4 rounded-xl font-semibold text-lg">
+          <motion.button
+            onClick={handleStartQuest}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            className="bg-gradient-to-r from-[#ff9f5e] to-[#f46d3b] hover:brightness-105 transition px-8 py-4 rounded-xl font-semibold text-lg text-black"
+          >
             Start Quest 🚀
-          </button>
+          </motion.button>
+          {questStarted && (
+            <p className="mt-3 text-[var(--sea-500)] font-semibold">Quest started! Keep exploring for bonus rewards.</p>
+          )}
 
         </div>
 

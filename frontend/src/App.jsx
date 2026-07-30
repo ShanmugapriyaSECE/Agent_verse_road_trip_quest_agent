@@ -12,6 +12,10 @@ function mapTripDataToStops(tripData) {
   if (!tripData?.itinerary || !Array.isArray(tripData.itinerary)) return [];
 
   const STOP_ICONS = ["📍", "🌄", "🍽️", "🏛️", "🌊", "🌿", "🏕️", "🎯"];
+
+  const getTravelImage = (query, seed) =>
+    `https://source.unsplash.com/random/900x600/?${encodeURIComponent(query)}&sig=${seed}`;
+
   const stops = [];
 
   tripData.itinerary.forEach((day, dayIdx) => {
@@ -22,20 +26,21 @@ function mapTripDataToStops(tripData) {
       if (!slotData?.activity) return;
 
       const index = dayIdx * slots.length + slotIdx;
-      const placeName = slotData.location || slotData.activity;
+      const placeName = slotData.location || slotData.activity || `Stop ${index + 1}`;
+      const destination = tripData.summary?.destination || placeName;
 
       stops.push({
         id: index + 1,
         name: placeName,
         icon: STOP_ICONS[index % STOP_ICONS.length],
-        location: tripData.summary?.destination || placeName,
+        location: destination,
         xp: (index + 1) * 50,
         quest: `Visit ${placeName}`,
         reward: `Unlock the Explorer badge and earn ${(index + 1) * 50} XP`,
         description: slotData.notes || slotData.activity,
         images: [
-          `https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800`,
-          `https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800`,
+          getTravelImage(`${placeName}, ${destination}, scenic`, index + 1),
+          getTravelImage(`${placeName}, ${destination}, landmark`, index + 2),
         ],
         agent: "Live Places API",
         estimatedTime: slotData.estimatedTime || "1-2 hours",
@@ -52,8 +57,10 @@ function App() {
   const [tripData, setTripData] = useState(null);
   const [stops, setStops] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [lastRequest, setLastRequest] = useState(null);
 
   async function handleGenerate(params) {
+    setLastRequest(params);
     setIsLoading(true);
     setErrorMsg(null);
     setTripData(null);
@@ -91,6 +98,11 @@ function App() {
     }
   }
 
+  async function handleReplan() {
+    if (!lastRequest) return;
+    await handleGenerate(lastRequest);
+  }
+
   return (
     <div className="min-h-screen bg-[var(--basecamp-900)] text-[var(--text-on-dark)]">
       <Navbar currentPage={page} onNavigate={setPage} />
@@ -99,7 +111,7 @@ function App() {
         {page === "plan" && <PlanTrip onGenerate={handleGenerate} isLoading={isLoading} />}
 
         {page === "journey" && (
-          <Home tripData={tripData} stops={stops} isLoading={isLoading} errorMsg={errorMsg} />
+          <Home tripData={tripData} stops={stops} isLoading={isLoading} errorMsg={errorMsg} onReplan={handleReplan} />
         )}
 
         {page === "quests" && (

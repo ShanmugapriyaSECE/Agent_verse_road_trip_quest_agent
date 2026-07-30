@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 function BadgePanel() {
 
   const badges = [
@@ -17,12 +19,14 @@ function BadgePanel() {
       <div className="grid grid-cols-2 gap-4">
 
         {badges.map((badge) => (
-          <div
+          <motion.div
             key={badge}
-            className="bg-[var(--basecamp-900)] rounded-xl p-4 text-center hover:scale-105 transition-transform"
+            whileHover={{ rotate: [0, -5, 5, -3, 0], scale: 1.02 }}
+            transition={{ duration: 0.35 }}
+            className="bg-[var(--basecamp-900)] rounded-xl p-4 text-center shadow-sm border border-black/10"
           >
             {badge}
-          </div>
+          </motion.div>
         ))}
 
       </div>

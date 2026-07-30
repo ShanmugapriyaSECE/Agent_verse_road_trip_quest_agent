@@ -2,20 +2,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Warm road-trip palette */
-  --basecamp-900: #1C1917; /* deep charcoal-brown */
-  --basecamp-800: #292524; /* warm dark brown-gray (card bg) */
-  --ember-500: #F5793A; /* sunset orange / amber */
-  --sea-500: #4D9078; /* muted teal-green */
-  --text-on-dark: #F5F3F1; /* warm off-white */
-  --muted-text: #C9C2BD;
-  --node-glow-selected: 0 0 32px rgba(245, 121, 58, 0.55), 0 0 64px rgba(77, 144, 120, 0.15);
+  /* Vibrant road-trip palette */
+  --basecamp-900: #120c08; /* deep rich charcoal */
+  --basecamp-800: #31221a; /* warm dark cocoa */
+  --basecamp-700: #4a3528; /* rich coffee */
+  --ember-500: #ff8c42; /* glowing sunset orange */
+  --sea-500: #5db39d; /* vibrant teal green */
+  --text-on-dark: #fff6eb; /* warm ivory */
+  --muted-text: #d8c9bb;
+  --node-glow-selected: 0 0 32px rgba(255, 140, 66, 0.55), 0 0 64px rgba(93, 179, 157, 0.18);
 }
 
 body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
-  background-color: var(--basecamp-900);
+  background: radial-gradient(circle at top, rgba(255, 140, 66, 0.16), transparent 28%),
+    linear-gradient(180deg, #0e0905 0%, #120c08 60%, #1c1510 100%);
   color: var(--text-on-dark);
+  min-height: 100vh;
 }
 
 /* ===== 3D Winding Road Perspective Container ===== */
@@ -297,11 +300,11 @@ body {
 }
 
 .route-map-container {
-  height: 480px;
-  background: var(--basecamp-800);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: 24px;
+  height: 520px;
+  background: linear-gradient(180deg, rgba(45,33,26,0.95), rgba(39,28,21,0.95));
+  border: 1px solid rgba(255, 149, 94, 0.18);
+  border-radius: 30px;
   overflow: hidden;
   margin-top: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
 }
