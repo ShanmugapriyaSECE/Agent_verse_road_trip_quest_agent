@@ -1,9 +1,13 @@
 import { useState } from "react";
+import axios from "axios";
 import { formatINR } from "../format";
+
+const BOOKING_API_URL = "http://localhost:8000/book-stay";
 
 function Bookings({ tripData }) {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
+  const [bookingStatus, setBookingStatus] = useState(null);
 
   const rawOptions = tripData?.accommodation?.options || [];
   const options = rawOptions.filter((option) => !/oyo/i.test(option.name || ""));
@@ -91,15 +95,37 @@ function Bookings({ tripData }) {
               </div>
             </div>
             <button
-              onClick={() => setConfirmed(true)}
+              onClick={async () => {
+                if (!selectedBooking) return;
+                setConfirmed(false);
+                setBookingStatus(null);
+                try {
+                  const response = await axios.post(BOOKING_API_URL, {
+                    accommodation: selectedBooking,
+                    destination: tripData?.summary?.destination,
+                  });
+                  setBookingStatus(response.data);
+                  setConfirmed(true);
+                } catch (err) {
+                  console.error("Booking API error:", err);
+                  setBookingStatus({ error: true, message: "Booking failed. Please try again." });
+                }
+              }}
               className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
             >
               Confirm Booking
             </button>
-            {confirmed && (
+            {bookingStatus?.error && (
+              <div className="rounded-3xl bg-[rgba(197,77,77,0.12)] border border-[rgba(197,77,77,0.18)] p-4 text-[var(--text-on-dark)] shadow-2xl">
+                <p className="font-semibold text-[var(--ember-500)]">Booking failed</p>
+                <p className="mt-1 text-[var(--muted-text)]">{bookingStatus.message}</p>
+              </div>
+            )}
+            {confirmed && bookingStatus && !bookingStatus.error && (
               <div className="rounded-3xl bg-[rgba(77,144,120,0.12)] border border-[rgba(77,144,120,0.18)] p-4 text-[var(--text-on-dark)] shadow-2xl">
                 <p className="font-semibold text-[var(--sea-500)]">Booking confirmed!</p>
-                <p className="mt-1 text-[var(--muted-text)]">Your stay at {selectedBooking.name} is reserved in this demo experience.</p>
+                <p className="mt-1 text-[var(--muted-text)]">Your stay at {bookingStatus.booking?.name || selectedBooking.name} is reserved in this demo experience.</p>
+                <p className="mt-1 text-[var(--muted-text)]">{bookingStatus.confirmation?.message}</p>
               </div>
             )}
           </div>

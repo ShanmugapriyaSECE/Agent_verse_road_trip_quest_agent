@@ -10,7 +10,9 @@ import Replan from "./pages/Replan";
 import QuestsPage from "./components/QuestsPage";
 import BadgePanel from "./components/BadgePanel";
 
-const API_URL = "http://localhost:8000/plan-trip";
+const API_BASE = "http://localhost:8000";
+const PLAN_API_URL = `${API_BASE}/plan-trip`;
+const REPLAN_API_URL = `${API_BASE}/replan`;
 
 function mapTripDataToStops(tripData) {
   if (!tripData?.itinerary || !Array.isArray(tripData.itinerary)) return [];
@@ -117,7 +119,7 @@ function App() {
     setStops([]);
 
     try {
-      const response = await axios.post(API_URL, params);
+      const response = await axios.post(PLAN_API_URL, params);
       const data = response.data;
 
       if (data?.error) {
@@ -149,9 +151,32 @@ function App() {
   }
 
   async function handleReplan() {
-    if (!lastRequest) return;
-    await handleGenerate(lastRequest);
-    setPage("journey");
+    if (!lastRequest || !tripData) return;
+    setIsLoading(true);
+    setErrorMsg(null);
+
+    try {
+      const response = await axios.post(REPLAN_API_URL, {
+        current_plan: tripData,
+        params: lastRequest,
+        reason: "Refresh route with current request parameters",
+      });
+      const data = response.data;
+
+      if (data?.error) {
+        setErrorMsg(data.message || "Unable to replan the trip. Please try again.");
+        return;
+      }
+
+      setTripData(data);
+      setStops(mapTripDataToStops(data));
+      setPage("journey");
+    } catch (err) {
+      console.error("API replan error:", err);
+      setErrorMsg("Could not reach the replanning server. Make sure the backend is running on port 8000.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
