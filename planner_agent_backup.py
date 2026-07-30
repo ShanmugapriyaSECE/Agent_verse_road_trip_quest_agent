@@ -2,7 +2,7 @@ import json
 from typing import Dict, Any, List, Optional
 import concurrent.futures
 
-from scout_agent import search_places_and_attractions, search_food_spots
+from agents.scout_agent import search_places_and_attractions, search_food_spots
 
 
 SYSTEM_PROMPT = """ROLE: Primary Planner Agent (Travel System).

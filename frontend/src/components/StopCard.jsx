@@ -179,7 +179,7 @@ function StopCard({ stop }) {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="bg-gradient-to-r from-[#ff9f5e] to-[#f46d3b] hover:brightness-105 transition px-8 py-4 rounded-xl font-semibold text-lg text-black"
+            className="bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] hover:brightness-105 transition px-8 py-4 rounded-xl font-semibold text-lg text-black"
           >
             Start Quest 🚀
           </motion.button>

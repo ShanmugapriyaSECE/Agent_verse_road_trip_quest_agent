@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
-from planner_agent import PlannerAgent
+from agents.planner_agent import PlannerAgent
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("road_trip_quest_api")

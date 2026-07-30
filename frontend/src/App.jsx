@@ -7,6 +7,7 @@ import PlanTrip from "./pages/PlanTrip";
 import Home from "./pages/Home";
 import Bookings from "./pages/Bookings";
 import Replan from "./pages/Replan";
+import QuestsPage from "./components/QuestsPage";
 import BadgePanel from "./components/BadgePanel";
 
 const API_URL = "http://localhost:8000/plan-trip";
@@ -168,18 +169,18 @@ function App() {
           )}
 
           {page === "quests" && (
-            <section className="space-y-6">
-              <h2 className="text-3xl font-bold">🎯 Quests</h2>
-              <p className="text-[var(--muted-text)]">
-                Quests view — coming together. Select a journey to see quests for each stop.
-              </p>
-            </section>
+            <QuestsPage tripData={tripData} stops={stops} />
           )}
 
           {page === "badges" && (
-            <section className="space-y-6">
-              <h2 className="text-3xl font-bold">🏅 Badges</h2>
-              <BadgePanel />
+            <section className="rounded-[36px] bg-[rgba(255,255,255,0.08)] border border-white/10 p-8 shadow-2xl backdrop-blur-sm space-y-6">
+              <div>
+                <h2 className="text-3xl font-bold text-[var(--sea-500)]">🏅 Badges</h2>
+                <p className="mt-3 text-[var(--muted-text)]">Track your achievements, completed quests, and travel milestones in a unified dashboard.</p>
+              </div>
+              <div className="rounded-3xl bg-[rgba(255,255,255,0.06)] border border-white/10 p-6 shadow-2xl">
+                <BadgePanel />
+              </div>
             </section>
           )}
 

@@ -5,15 +5,15 @@ function Replan({ tripData, isLoading, onReplan }) {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[36px] bg-[linear-gradient(135deg,rgba(155,108,255,0.14),rgba(255,92,168,0.12))] border border-[rgba(255,255,255,0.12)] p-8 shadow-2xl">
-        <h2 className="text-5xl font-extrabold text-[var(--text-on-dark)]">Replan Route</h2>
+      <section className="rounded-[36px] bg-[rgba(255,255,255,0.08)] border border-white/10 p-8 shadow-2xl backdrop-blur-sm">
+        <h2 className="text-5xl font-extrabold text-[var(--sea-500)]">Replan Route</h2>
         <p className="mt-3 text-[var(--muted-text)] max-w-2xl">
           Refresh your trip suggestions, update your route, or regenerate your stay options using the same inputs.
         </p>
       </section>
 
       {!hasPlan ? (
-        <div className="rounded-3xl bg-[rgba(255,255,255,0.05)] border border-white/10 p-8 text-[var(--muted-text)] shadow-inner">
+        <div className="rounded-3xl bg-[rgba(255,255,255,0.05)] border border-white/10 p-8 text-[var(--muted-text)] shadow-2xl">
           <p className="text-lg font-semibold text-[var(--text-on-dark)]">No trip to replan yet</p>
           <p className="mt-2">First create a journey on the Plan Trip page. Then return here to refresh your route with the latest suggestions.</p>
         </div>
@@ -33,7 +33,7 @@ function Replan({ tripData, isLoading, onReplan }) {
             <button
               onClick={onReplan}
               disabled={isLoading}
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#ff9f5e] to-[#f46d3b] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-60"
+              className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-60"
             >
               {isLoading ? "Refreshing…" : "Refresh Route"}
             </button>

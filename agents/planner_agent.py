@@ -3,8 +3,11 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 import concurrent.futures
 
-from scout_agent import search_places_and_attractions, search_food_spots
-from real_tools import get_weather_forecast, search_transport_options, search_accommodations
+from .scout_agent import ScoutAgent
+try:
+    from agents.real_tools import get_weather_forecast, search_transport_options, search_accommodations
+except ImportError:
+    from .real_tools import get_weather_forecast, search_transport_options, search_accommodations
 
 
 SYSTEM_PROMPT = """ROLE: Primary Planner Agent (Travel System).
@@ -18,36 +21,49 @@ CONSTRAINTS:
 
 TOOLS TO CALL:
 - get_weather_forecast(location, start_date, end_date)
-- search_places_and_attractions(location, mood_theme)
+- scout_agent.search_places_and_attractions(location, mood_theme)
 - search_transport_options(origin, destination, travel_date, mode)
 - search_accommodations(location, stay_type, room_count, budget_limit, total_days)
-- search_local_transport_and_blogs(location)
-- search_food_spots(location, cuisine_preference)
+- scout_agent.search_local_insights(location)
+- scout_agent.search_food_spots(location, cuisine_preference)
+"""
 
-WORKFLOW:
-1. Parse input: destination, dates, transport, stay_type, budget, mood, count. (Ask if critical parameters are missing).
-2. Fetch tool data in parallel.
-3. Filter options against budget and weather constraints.
-4. Return JSON only.
+# def get_weather_forecast(location: str, start_date: str, end_date: str) -> Dict[str, Any]:
+#     """Fetch weather forecast for specified location and date range."""
+#     return {
+#         "location": location,
+#         "start_date": start_date,
+#         "end_date": end_date,
+#         "forecast": f"Pleasant and mostly sunny weather expected in {location} between {start_date} and {end_date}.",
+#         "advisory": "Light jacket recommended for cool evenings."
+#     }
 
-OUTPUT FORMAT (JSON):
-{
-  "summary": {"destination":"","dates":"","group_size":0,"theme":"","total_cost":0},
-  "weather": {"summary":"","advisory":""},
-  "transport": {"intercity":{"mode":"","details":"","cost":0},"local_tips":""},
-  "accommodation": {"type":"","options":[{"name":"","cost_per_night":0,"reason":""}]},
-  "itinerary": [{"day":1,"date":"","morning":{"activity":"","location":"","notes":""},"afternoon":{...},"evening":{...},"food":[]}],
-  "local_insights": {"language_tips":"","blog_highlights":""}
-}"""
+# def search_transport_options(origin: str, destination: str, travel_date: str, mode: str) -> Dict[str, Any]:
+#     """Search intercity travel options between origin and destination."""
+#     return {
+#         "origin": origin,
+#         "destination": destination,
+#         "travel_date": travel_date,
+#         "mode": mode,
+#         "details": f"Express {mode.capitalize()} service from {origin} to {destination}",
+#         "cost": 150.0
+#     }
 
-
-def search_local_transport_and_blogs(location: str) -> Dict[str, Any]:
-    """Search local transport options and retrieve travel blog recommendations."""
-    return {
-        "local_transport": f"Metro, local cabs, and rental bikes are widely available in {location}.",
-        "language_tips": "Basic English and local language phrases are helpful for taxi drivers and local shops.",
-        "blog_highlights": f"Travelers recommend visiting early morning to avoid crowds in popular spots of {location}."
-    }
+# def search_accommodations(location: str, stay_type: str, room_count: int, budget_limit: float, total_days: int) -> List[Dict[str, Any]]:
+#     """Search accommodation matching criteria within budget constraints."""
+#     per_night_budget = (budget_limit / max(total_days, 1)) if total_days > 0 else budget_limit
+#     return [
+#         {
+#             "name": f"Grand {stay_type.capitalize()} {location}",
+#             "cost_per_night": min(120.0, per_night_budget),
+#             "reason": f"Fits budget and room requirements ({room_count} rooms)."
+#         },
+#         {
+#             "name": f"Comfort Suites {location}",
+#             "cost_per_night": min(85.0, per_night_budget * 0.8),
+#             "reason": "Budget-friendly with good accessibility."
+#         }
+#     ]
 
 
 class PlannerAgent:
@@ -55,13 +71,14 @@ class PlannerAgent:
 
     def __init__(self):
         self.system_prompt = SYSTEM_PROMPT
+        self.scout_agent = ScoutAgent()
         self.tools = {
             "get_weather_forecast": get_weather_forecast,
-            "search_places_and_attractions": search_places_and_attractions,
+            "search_places_and_attractions": self.scout_agent.search_places_and_attractions,
             "search_transport_options": search_transport_options,
             "search_accommodations": search_accommodations,
-            "search_local_transport_and_blogs": search_local_transport_and_blogs,
-            "search_food_spots": search_food_spots,
+            "search_local_transport_and_blogs": self.scout_agent.search_local_insights,
+            "search_food_spots": self.scout_agent.search_food_spots,
         }
 
     def validate_inputs(self, params: Dict[str, Any]) -> Optional[List[str]]:
@@ -91,16 +108,17 @@ class PlannerAgent:
         mood = params["mood"]
         group_size = params["group_size"]
 
+        # Estimate room count based on group size
         room_count = max(1, (group_size + 1) // 2)
         total_days = self._calculate_total_days(start_date, end_date)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_weather = executor.submit(get_weather_forecast, destination, start_date, end_date)
-            future_places = executor.submit(search_places_and_attractions, destination, mood)
+            future_places = executor.submit(self.scout_agent.search_places_and_attractions, destination, mood)
             future_transport = executor.submit(search_transport_options, origin, destination, start_date, mode)
             future_stays = executor.submit(search_accommodations, destination, stay_type, room_count, budget, total_days)
-            future_local = executor.submit(search_local_transport_and_blogs, destination)
-            future_food = executor.submit(search_food_spots, destination, "Local & International")
+            future_local = executor.submit(self.scout_agent.search_local_insights, destination)
+            future_food = executor.submit(self.scout_agent.search_food_spots, destination, "Local & International")
 
             results = {
                 "weather": future_weather.result(),
@@ -117,17 +135,17 @@ class PlannerAgent:
         real places/food Scout found instead of only ever using the first 3."""
         places = tool_data["places"] or [{"name": "Local exploration"}]
         food = tool_data["food"] or []
-
+ 
         start_dt = datetime.strptime(params["start_date"], "%Y-%m-%d")
         itinerary = []
-
+ 
         for day_num in range(1, total_days + 1):
             day_date = (start_dt + timedelta(days=day_num - 1)).strftime("%Y-%m-%d")
-
+ 
             morning_place = places[(day_num - 1) * 3 % len(places)]
             afternoon_place = places[((day_num - 1) * 3 + 1) % len(places)] if len(places) > 1 else morning_place
             evening_place = places[((day_num - 1) * 3 + 2) % len(places)] if len(places) > 2 else morning_place
-
+ 
             if food:
                 day_food = [
                     food[i % len(food)]["name"]
@@ -135,31 +153,28 @@ class PlannerAgent:
                 ]
             else:
                 day_food = []
-
+ 
             itinerary.append({
                 "day": day_num,
                 "date": day_date,
                 "morning": {
                     "activity": f"Visit {morning_place['name']}",
                     "location": morning_place["name"],
-                    "notes": "Morning tour & sightseeing",
-                    "images": morning_place.get("images", []),
+                    "notes": "Morning tour & sightseeing"
                 },
                 "afternoon": {
                     "activity": f"Explore {afternoon_place['name']}",
                     "location": afternoon_place["name"],
-                    "notes": "Cultural exploration",
-                    "images": afternoon_place.get("images", []),
+                    "notes": "Cultural exploration"
                 },
                 "evening": {
                     "activity": f"Sunset view at {evening_place['name']}",
                     "location": evening_place["name"],
-                    "notes": "Relaxing evening visual",
-                    "images": evening_place.get("images", []),
+                    "notes": "Relaxing evening visual"
                 },
                 "food": day_food
             })
-
+ 
         return itinerary
 
     def plan(self, params: Dict[str, Any]) -> Dict[str, Any]:
@@ -174,12 +189,14 @@ class PlannerAgent:
         tool_data = self.fetch_data_parallel(params)
         total_days = self._calculate_total_days(params["start_date"], params["end_date"])
 
+        # Calculate estimated total cost from transport and accommodation
         transport_cost = tool_data["transport"]["cost"]
         stay_cost_per_night = tool_data["stays"][0]["cost_per_night"] if tool_data["stays"] else 0
         total_cost = transport_cost + (stay_cost_per_night * total_days)
 
-        itinerary = self._build_itinerary(params, tool_data, total_days)
+        itinerary = self._build_itinerary(params,tool_data, total_days)
 
+        # Assemble JSON schema response adhering strictly to constraints & output format
         response = {
             "summary": {
                 "destination": params["destination"],
@@ -206,9 +223,35 @@ class PlannerAgent:
             },
             "itinerary": itinerary,
             "local_insights": {
-                "language_tips": tool_data["local"]["language_tips"],
+                "language_tips" : tool_data["local"]["language_tips"],
                 "blog_highlights": tool_data["local"]["blog_highlights"]
             }
+        #     "itinerary": [
+        #         {
+        #             "day": 1,
+        #             "date": params["start_date"],
+        #             "morning": {
+        #                 "activity": f"Visit {tool_data['places'][0]['name']}",
+        #                 "location": tool_data["places"][0]["name"],
+        #                 "notes": "Morning tour & sightseeing"
+        #             },
+        #             "afternoon": {
+        #                 "activity": f"Explore {tool_data['places'][1]['name']}",
+        #                 "location": tool_data["places"][1]["name"],
+        #                 "notes": "Cultural exploration"
+        #             },
+        #             "evening": {
+        #                 "activity": f"Sunset view at {tool_data['places'][2]['name']}",
+        #                 "location": tool_data["places"][2]["name"],
+        #                 "notes": "Relaxing evening visual"
+        #             },
+        #             "food": [spot["name"] for spot in tool_data["food"]]
+        #         }
+        #     ],
+        #     "local_insights": {
+        #         "language_tips": tool_data["local"]["language_tips"],
+        #         "blog_highlights": tool_data["local"]["blog_highlights"]
+        #     }
         }
         return response
 
@@ -218,11 +261,11 @@ if __name__ == "__main__":
     sample_request = {
         "destination": "Munnar",
         "start_date": "2026-08-10",
-        "end_date": "2026-08-14",
+        "end_date": "2026-08-12",
         "origin": "Chennai",
         "transport_mode": "car",
         "stay_type": "resort",
-        "budget": 500.0,
+        "budget": 1500.0,
         "mood": "adventure",
         "group_size": 2
     }

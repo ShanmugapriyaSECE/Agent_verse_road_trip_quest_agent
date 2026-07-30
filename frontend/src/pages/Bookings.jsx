@@ -11,45 +11,53 @@ function Bookings({ tripData }) {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[36px] bg-[linear-gradient(135deg,rgba(155,108,255,0.14),rgba(255,92,168,0.12))] border border-[rgba(255,255,255,0.12)] p-8 shadow-2xl">
-        <h2 className="text-5xl font-extrabold text-[var(--text-on-dark)]">Bookings</h2>
+      <section className="rounded-[36px] bg-[rgba(255,255,255,0.08)] border border-white/10 p-8 shadow-2xl backdrop-blur-sm">
+        <h2 className="text-5xl font-extrabold text-[var(--sea-500)]">Bookings</h2>
         <p className="mt-3 text-[var(--muted-text)] max-w-2xl">
           Choose a stay option from your generated journey. This page shows lodging options discovered for your destination and lets you confirm a demo reservation.
         </p>
       </section>
 
       {!tripData ? (
-        <div className="rounded-3xl bg-[rgba(255,255,255,0.05)] border border-white/10 p-8 text-[var(--muted-text)] shadow-inner">
+        <div className="rounded-3xl bg-[rgba(255,255,255,0.05)] border border-white/10 p-8 text-[var(--muted-text)] shadow-2xl">
           <p className="text-lg font-semibold text-[var(--text-on-dark)]">Create a trip first</p>
           <p className="mt-2">Start by planning your journey on the Plan Trip page. Then return here to confirm your chosen stay.</p>
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-2">
-          {options.length > 0 ? (
-            options.map((option, index) => (
-              <div key={`${option.name}-${index}`} className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.06)] p-6 shadow-2xl">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xl font-semibold text-[var(--text-on-dark)]">{option.name}</p>
-                    <p className="mt-2 text-[var(--muted-text)]">{option.reason || "Suggested stay for your route."}</p>
+        <>
+          <div className="rounded-3xl bg-[rgba(255,255,255,0.06)] border border-white/10 p-6 shadow-2xl mb-6">
+            <p className="text-sm uppercase tracking-[0.24em] text-[var(--sea-500)]">Trip note</p>
+            <p className="mt-2 text-[var(--muted-text)]">
+              Accommodation selections are managed here. Your Journey and Quests pages display the itinerary route and all node details.
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            {options.length > 0 ? (
+              options.map((option, index) => (
+                <div key={`${option.name}-${index}`} className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.06)] p-6 shadow-2xl">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xl font-semibold text-[var(--text-on-dark)]">{option.name}</p>
+                      <p className="mt-2 text-[var(--muted-text)]">{option.reason || "Suggested stay for your route."}</p>
+                    </div>
+                    <p className="text-right text-lg font-semibold text-[var(--ember-500)]">
+                      {option.cost_per_night ? `${formatINR(option.cost_per_night)} / night` : "Estimate only"}
+                    </p>
                   </div>
-                  <p className="text-right text-lg font-semibold text-[var(--ember-500)]">
-                    {option.cost_per_night ? `${formatINR(option.cost_per_night)} / night` : "Estimate only"}
-                  </p>
+                  <button
+                    onClick={() => {
+                      setSelectedBooking(option);
+                      setConfirmed(false);
+                    }}
+                    className="mt-5 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] px-5 py-3 text-sm font-semibold text-black transition hover:brightness-110"
+                  >
+                    Select this stay
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setSelectedBooking(option);
-                    setConfirmed(false);
-                  }}
-                  className="mt-5 inline-flex items-center justify-center rounded-full bg-[var(--sea-500)] px-5 py-3 text-sm font-semibold text-black transition hover:brightness-110"
-                >
-                  Select this stay
-                </button>
-              </div>
-            ))
-          ) : (
-            <div className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.05)] p-8 shadow-inner">
+              ))
+            ) : (
+            <div className="rounded-3xl border border-white/10 bg-[rgba(255,255,255,0.05)] p-8 shadow-2xl">
               <p className="text-lg font-semibold text-[var(--text-on-dark)]">No booking options found</p>
               <p className="mt-2 text-[var(--muted-text)]">
                 Your generated itinerary did not return stay suggestions. Please replan or try a different destination.
@@ -62,6 +70,7 @@ function Bookings({ tripData }) {
             </div>
           )}
         </div>
+      </>
       )}
 
       {selectedBooking && (
@@ -83,12 +92,12 @@ function Bookings({ tripData }) {
             </div>
             <button
               onClick={() => setConfirmed(true)}
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#ff9f5e] to-[#f46d3b] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
+              className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
             >
               Confirm Booking
             </button>
             {confirmed && (
-              <div className="rounded-3xl bg-[rgba(77,144,120,0.12)] border border-[rgba(77,144,120,0.18)] p-4 text-[var(--text-on-dark)]">
+              <div className="rounded-3xl bg-[rgba(77,144,120,0.12)] border border-[rgba(77,144,120,0.18)] p-4 text-[var(--text-on-dark)] shadow-2xl">
                 <p className="font-semibold text-[var(--sea-500)]">Booking confirmed!</p>
                 <p className="mt-1 text-[var(--muted-text)]">Your stay at {selectedBooking.name} is reserved in this demo experience.</p>
               </div>

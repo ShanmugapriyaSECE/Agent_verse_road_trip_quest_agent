@@ -136,7 +136,7 @@ function Landing({ onNavigate }) {
               </div>
               <button
                 onClick={() => onNavigate && onNavigate("plan")}
-                className="rounded-full border border-white/50 bg-black/30 backdrop-blur-md px-7 py-3 text-[0.78rem] sm:text-[0.83rem] font-bold uppercase tracking-widest text-white hover:bg-white hover:text-black transition duration-300 shadow-xl"
+                className="rounded-full bg-gradient-to-r from-[#9b6cff] to-[#ff5ca8] px-7 py-3 text-[0.78rem] sm:text-[0.83rem] font-bold uppercase tracking-widest text-black hover:brightness-110 transition duration-300 shadow-xl"
               >
                 Start Your Adventure
               </button>

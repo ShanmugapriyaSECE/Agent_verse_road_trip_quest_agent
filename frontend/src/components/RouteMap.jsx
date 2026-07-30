@@ -32,23 +32,61 @@ function buildNodesAndEdges(stops) {
 
   // Add a start node, one node per stop, and a finish node
   const allNodes = [
-    { id: "start", position: { x: 0, y: 100 }, data: { label: "🚩 Start" } },
+    {
+      id: "start",
+      position: { x: 0, y: 100 },
+      data: { label: "🚩 Start" },
+      style: {
+        background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+        color: "white",
+        border: "2px solid rgba(147, 51, 234, 0.45)",
+        borderRadius: "24px",
+        padding: "18px 14px",
+        boxShadow: "0 18px 50px rgba(79, 70, 229, 0.22)",
+      },
+    },
     ...stops.map((stop, i) => ({
       id: String(stop.id),
-      position: { x: 220 + i * 230, y: i % 2 === 0 ? 30 : 150 },
+      position: { x: 220 + i * 240, y: i % 2 === 0 ? 30 : 170 },
       data: { label: `${stop.icon || "📍"} ${stop.name}` },
+      style: {
+        background: "rgba(15, 23, 42, 0.95)",
+        color: "#f8fafc",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: "24px",
+        padding: "18px 16px",
+        boxShadow: "0 18px 50px rgba(15, 23, 42, 0.35)",
+      },
     })),
     {
       id: "end",
-      position: { x: 220 + stops.length * 230, y: 100 },
+      position: { x: 220 + stops.length * 240, y: 100 },
       data: { label: "🏁 End" },
+      style: {
+        background: "linear-gradient(135deg, #f97316, #facc15)",
+        color: "#111827",
+        border: "2px solid rgba(251, 146, 60, 0.45)",
+        borderRadius: "24px",
+        padding: "18px 14px",
+        boxShadow: "0 18px 50px rgba(244, 114, 23, 0.22)",
+      },
     },
   ];
 
   const allEdges = [];
   const ids = ["start", ...stops.map((s) => String(s.id)), "end"];
   for (let i = 0; i < ids.length - 1; i++) {
-    allEdges.push({ id: `e${ids[i]}-${ids[i + 1]}`, source: ids[i], target: ids[i + 1], animated: true });
+    allEdges.push({
+      id: `e${ids[i]}-${ids[i + 1]}`,
+      source: ids[i],
+      target: ids[i + 1],
+      animated: true,
+      style: {
+        stroke: "#8b5cf6",
+        strokeWidth: 3,
+        strokeDasharray: "8 10",
+      },
+    });
   }
 
   return { nodes: allNodes, edges: allEdges };
@@ -64,10 +102,15 @@ function RouteMap({ stops }) {
         Interactive node graph of your journey
       </p>
 
-      <div className="route-map-container">
-        <ReactFlow nodes={nodes} edges={edges} fitView>
-          <Background />
-          <MiniMap />
+      <div className="route-map-container overflow-hidden rounded-[32px] border border-white/10 bg-[rgba(8,15,29,0.96)] shadow-[0_28px_80px_rgba(15,23,42,0.45)]">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          fitView
+          style={{ width: "100%", height: "520px", background: "linear-gradient(180deg, rgba(8,15,29,0.96), rgba(15,23,42,0.96))" }}
+        >
+          <Background gap={16} color="#1f2937" />
+          <MiniMap nodeColor="#8b5cf6" />
           <Controls />
         </ReactFlow>
       </div>
